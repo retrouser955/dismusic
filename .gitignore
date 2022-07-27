@@ -1,0 +1,7 @@
+node_modules
+
+# auth token
+auth.js
+
+# Spotify Data Files
+.data/
