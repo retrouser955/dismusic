@@ -37,6 +37,7 @@ class Player extends EventEmmiter {
         this.queueData = {}
         this.songs = {}
         this.audioPlayers = {}
+        this.audioResources = {}
     }
     /**
      * Create a queue in your guild
@@ -59,7 +60,8 @@ class Player extends EventEmmiter {
                 songArr.splice(0, 1)
                 const newSong = songArr[0]
                 const spotifySongPattern = /^((https:)?\/\/)?open.spotify.com\/(track)\//;
-                let isSpotifyURL, spotifyObj, searchSong
+                let isSpotifyURL
+                let spotifyObj, searchSong
                 if(String(newSong.url).match(spotifySongPattern)) {
                     isSpotifyURL = true
                     if(play.is_expired()) await play.refreshToken()
@@ -74,14 +76,18 @@ class Player extends EventEmmiter {
                     isSpotifyURL = false
                     searchSong = newSong.title
                 }
-                const search = await play.search(searchSong, {
-                    limit: 1
+                let search
+                if(isSpotifyURL) {
+                    search = await play.search(searchSong, {
+                        limit: 1
+                    })
+                }
+                const stream = await play.stream(isSpotifyURL ? search[0].url : newSong.url)
+                this.audioResources[guildId] = createAudioResource(stream.stream, {
+                    inputType: stream.type,
+                    inlineVolume: true
                 })
-                const stream = await play.stream(search[0].url)
-                const resource = createAudioResource(stream.stream, {
-                    inputType: stream.type
-                })
-                this.audioPlayers[guildId].play(resource)
+                this.audioPlayers[guildId].play(this.audioPlayers[guildId])
                 this.emit('trackStart', newSong, this.queueData[guildId])
             },
             pause: async () => {
@@ -134,8 +140,9 @@ class Player extends EventEmmiter {
                 })
                 const stream = await play.stream(isYoutubeUrl ? searchSong : searchRes[0].url)
 
-                const audioRes = createAudioResource(stream.stream, {
-                    inputType: stream.type
+                this.audioResources[guildId] = createAudioResource(stream.stream, {
+                    inputType: stream.type,
+                    inlineVolume: true
                 })
 
                 this.audioPlayers[guildId] = createAudioPlayer({
@@ -146,7 +153,7 @@ class Player extends EventEmmiter {
 
                 const connection = getVoiceConnection(guildId)
 
-                this.audioPlayers[guildId].play(audioRes)
+                this.audioPlayers[guildId].play(this.audioResources[guildId])
 
                 connection.subscribe(this.audioPlayers[guildId])
                 this.audioPlayers[guildId].on('stateChange', async (_oldState, newState) => {
@@ -179,12 +186,13 @@ class Player extends EventEmmiter {
                                 stream = await play.stream(songArray[0].url)
                             }
                             
-                            const audioRes = createAudioResource(stream.stream, {
-                                inputType: stream.type
+                            this.audioResources[guildId] = createAudioResource(stream.stream, {
+                                inputType: stream.type,
+                                inlineVolume: true
                             })
                             this.emit(`trackStart`, songArray[0], this.queueData[guildId])
 
-                            this.audioPlayers[guildId].play(audioRes)
+                            this.audioPlayers[guildId].play(this.audioResources[guildId])
                         } catch (error) {
                             const metadata = this.queueData[guildId]
                             this.emit('queueEnded', metadata)
@@ -293,10 +301,11 @@ class Player extends EventEmmiter {
                     limit: 1
                 })
                 const stream = await play.stream(search[0].url)
-                const resource = createAudioResource(stream.stream, {
-                    inputType: stream.type
+                this.audioResources[guildId] = createAudioResource(stream.stream, {
+                    inputType: stream.type,
+                    inlineVolume: true
                 })
-                this.audioPlayers[guildId].play(resource)
+                this.audioPlayers[guildId].play(this.audioPlayers[guildId])
                 this.emit('trackStart', newSong, this.queueData[guildId])
             },
             pause: async () => {
@@ -349,8 +358,9 @@ class Player extends EventEmmiter {
                 })
                 const stream = await play.stream(isYoutubeUrl ? searchSong : searchRes[0].url)
 
-                const audioRes = createAudioResource(stream.stream, {
-                    inputType: stream.type
+                this.audioResources[guildId] = createAudioResource(stream.stream, {
+                    inputType: stream.type,
+                    inlineVolume: true
                 })
 
                 this.audioPlayers[guildId] = createAudioPlayer({
@@ -361,7 +371,7 @@ class Player extends EventEmmiter {
 
                 const connection = getVoiceConnection(guildId)
 
-                this.audioPlayers[guildId].play(audioRes)
+                this.audioPlayers[guildId].play(this.audioResources[guildId])
 
                 connection.subscribe(this.audioPlayers[guildId])
                 this.audioPlayers[guildId].on('stateChange', async (_oldState, newState) => {
@@ -394,12 +404,13 @@ class Player extends EventEmmiter {
                                 stream = await play.stream(songArray[0].url)
                             }
                             
-                            const audioRes = createAudioResource(stream.stream, {
-                                inputType: stream.type
+                            this.audioResources[guildId] = createAudioResource(stream.stream, {
+                                inputType: stream.type,
+                                inlineVolume: true
                             })
                             this.emit(`trackStart`, songArray[0], this.queueData[guildId])
 
-                            this.audioPlayers[guildId].play(audioRes)
+                            this.audioPlayers[guildId].play(this.audioResources[guildId])
                         } catch (error) {
                             const metadata = this.queueData[guildId]
                             this.emit('queueEnded', metadata)
@@ -436,7 +447,7 @@ class Player extends EventEmmiter {
                 if(!song) throw new Error('Dismusic Error: You cannot play a song without the song parameter')
                 if(!options.metadata) throw new Error('Dismusic Error: You must have a metadata for the song')
                 let isSpotify, spotifyObj, searchSong
-                if(String(song).includes('https://open.spotify.com/track/')) {
+                if(String(song).match(/(^(https:)\/\/open.spotify.com\/(track))/)) {
                     isSpotify = true
                     if(play.is_expired()) await play.refreshToken()
                     const spotifyData = await play.spotify(String(song))
@@ -475,6 +486,13 @@ class Player extends EventEmmiter {
         if(!guildId) throw new Error('Dismusic Error: A valid discord guild must be provided')
         if(this.queue[`${guildId}`] == null) return false
         return true
+    }
+    async setVolume(guildId, amount) {
+        if(!guildId) throw new Error('Dismusic Error: A valid guild ID must be provided')
+        if(!amount) throw new Error('Dismusic Error: Amount must be provided')
+        if(!this.audioResources[guildId]) throw new Error('Dismusic Error: Could not find audio resources for this guild')
+        if(Number(amount < 0) || Number(amount > 100)) throw new Error('Dismusic Error: Could not set the volume to lower than 0 or more than 100')
+        this.audioResources[guildId].volume.setVolume(Number(amount))
     }
 }
 
