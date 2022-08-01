@@ -144,7 +144,7 @@ class Player extends EventEmmiter {
                     inputType: stream.type,
                     inlineVolume: true
                 })
-
+                
                 this.audioPlayers[guildId] = createAudioPlayer({
                     behaviors: {
                         noSubscriber: NoSubscriberBehavior.Play
@@ -154,7 +154,7 @@ class Player extends EventEmmiter {
                 const connection = getVoiceConnection(guildId)
 
                 this.audioPlayers[guildId].play(this.audioResources[guildId])
-
+                
                 connection.subscribe(this.audioPlayers[guildId])
                 this.audioPlayers[guildId].on('stateChange', async (_oldState, newState) => {
                     if(newState.status === 'idle') {
@@ -260,6 +260,12 @@ class Player extends EventEmmiter {
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
                     metadata: options.metadata
                 }
+            },
+            async setVolume(amount) {
+                if(!amount) throw new Error('Dismusic Error: Amount must be provided')
+                if(!this.audioResources[guildId]) throw new Error('Dismusic Error: Could not find audio resources for this guild')
+                if(Number(amount < 0) || Number(amount > 100)) throw new Error('Dismusic Error: Could not set the volume to lower than 0 or more than 100')
+                this.audioResources[guildId].volume.setVolume(Number(amount))
             }
         }
         return returnData
@@ -276,6 +282,7 @@ class Player extends EventEmmiter {
         //     guild: guildId,
         //     song: 0
         // }
+        const audioResource = this.audioResources[guildId]
         const returnData = {
             skip: async () => {
                 const songArr = this.songs[guildId]
@@ -305,7 +312,7 @@ class Player extends EventEmmiter {
                     inputType: stream.type,
                     inlineVolume: true
                 })
-                this.audioPlayers[guildId].play(this.audioPlayers[guildId])
+                this.audioPlayers[guildId].play(this.audioResources[guildId])
                 this.emit('trackStart', newSong, this.queueData[guildId])
             },
             pause: async () => {
@@ -478,6 +485,13 @@ class Player extends EventEmmiter {
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
                     metadata: options.metadata
                 }
+            },
+            async setVolume(amount) {
+                if(!amount) throw new Error('Dismusic Error: Amount must be provided')
+                if(!audioResource) throw new Error('Dismusic Error: Could not find audio resources for this guild')
+                if(Number(amount < 0) || Number(amount > 100)) throw new Error('Dismusic Error: Could not set the volume to lower than 0 or more than 100')
+                const newAmount = Number(amount) / 100
+                audioResource.volume.setVolume(newAmount)
             }
         }
         return returnData
@@ -486,13 +500,6 @@ class Player extends EventEmmiter {
         if(!guildId) throw new Error('Dismusic Error: A valid discord guild must be provided')
         if(this.queue[`${guildId}`] == null) return false
         return true
-    }
-    async setVolume(guildId, amount) {
-        if(!guildId) throw new Error('Dismusic Error: A valid guild ID must be provided')
-        if(!amount) throw new Error('Dismusic Error: Amount must be provided')
-        if(!this.audioResources[guildId]) throw new Error('Dismusic Error: Could not find audio resources for this guild')
-        if(Number(amount < 0) || Number(amount > 100)) throw new Error('Dismusic Error: Could not set the volume to lower than 0 or more than 100')
-        this.audioResources[guildId].volume.setVolume(Number(amount))
     }
 }
 

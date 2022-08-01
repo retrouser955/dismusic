@@ -83,8 +83,13 @@ client.on('messageCreate', async (message) => {
         message.channel.send(`Skipping ${queue.songs[0].title}`)
         queue.skip()
     }
+    else if (message.content.startsWith('!volume ')) {
+        const newMsgContent = message.content.replace('!volume ', '')
+        const queue = await client.player.getQueue(message.guildId)
+        queue.setVolume(newMsgContent)
+    }
 })
 .on('ready', () => {
     console.log(`Logged in as ${client.user.tag}`)
 })
-client.login(`your token`)
+client.login(`Your token`)
