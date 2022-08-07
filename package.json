@@ -1,6 +1,6 @@
 {
   "name": "dismusic",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "An easy music package for discord.js version 14",
   "main": "index.js",
   "scripts": {
