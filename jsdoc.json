@@ -1,0 +1,34 @@
+{
+    "source": {
+      "include": ["src"],
+      "includePattern": ".js$",
+      "excludePattern": "(node_modules/)"
+    },
+    "plugins": ["plugins/markdown"],
+    "templates": {
+      "cleverLinks": true,
+      "monospaceLinks": true
+    },
+    "opts": {
+      "encoding": "utf8",
+      "verbose": true,
+      "recurse": true,
+      "destination": "./docs/",
+      "readme": "./readme.md",
+      "template": "./node_modules/clean-jsdoc-theme",
+      "theme_opts": {
+        "theme": "dark",
+        "meta": [
+          {
+            "name": "author",
+            "content": "retrouser955"
+          },
+          {
+            "name": "description",
+            "content": "A complete framework to implement a musc system using discord.js v14"
+          }
+        ],
+        "title": "Dismusic"
+      }
+    }
+  }
