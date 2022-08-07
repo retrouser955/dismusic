@@ -168,36 +168,6 @@ client.login('your bot token')
 
 ⚠ This package is still in development. If you encountered a bug, open an issue at our github page
 
-### Queue return data
-
-This is the data which the queue will return if you use `createQueue` or `getQueue` functions
-
-Skip. Type: Function
-
-pause. Type: Function
-
-resume. Type: Function
-
-isPaused. Type: Boolean
-
-connect (params: voiceChannel). Type: Function
-
-stop. Type: Function
-
-playSong (params: query, options) Type: Function  
-    Song Options:  
-        metadata. The data you want to keep with the song
-
-songs. Type: Array. Current tracks in the queue. use songs[0] to get the current song  
-    song object:  
-        title. Type: String, The title of the song  
-        description. Type: String, The description of the song  
-        duration. Type: String, The duration of the song represented in minutes and seconds  
-        url: Type: String, The url of the song  
-        metadata: Type: Object, The metadata of the song  
-
-addSong. Type: Function (params: query, options). Add tracks to the queue  
-    Song Options:  
-        metadata. The data you want to keep with the song 
+There are docs for the package [here](https://retrouser955.github.io/dismusic/)
 
 If you encountered any problems or have a question, feel free to join our [discord server](https://discord.gg/uWfMZYju8c)

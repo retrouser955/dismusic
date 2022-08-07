@@ -1,6 +1,6 @@
 {
   "name": "dismusic",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "An easy music package for discord.js version 14",
   "main": "index.js",
   "scripts": {
@@ -20,5 +20,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/retrouser955/dismusic"
-  }
+  },
+  "homepage": "https://retrouser955.github.io/dismusic/"
 }
