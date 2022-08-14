@@ -16,6 +16,7 @@
  * @property {string} duration The duration of the song
  * @property {string} url The url of the song
  * @property {object} metadata The metadata of the song
+ * @property {string} thumbnail The thumbnail of the song
  */
 /**
  * @typedef {object} SongOptions
@@ -170,7 +171,8 @@ class Player extends EventEmmiter {
                     spotifyObj  = {
                         name: spotifyData.name,
                         artist: spotifyData.artists[0].name || null,
-                        url: spotifyData.url
+                        url: spotifyData.url,
+                        thumbnail: spotifyData.thumbnail
                     }
                     searchSong = `${spotifyObj.name} ${spotifyObj.artist} audio`
                 } else {
@@ -207,21 +209,22 @@ class Player extends EventEmmiter {
                             let stream;
                             const spotifySongPattern = /^((https:)?\/\/)?open.spotify.com\/(track)\//;
                             let spotifyObj, searchSong
-                            let isSpotifyURL;
+                            let isSpotifyLink
                             if(String(songArray[0].url).match(spotifySongPattern)) {
-                                isSpotifyURL = true
+                                isSpotifyLink = true
                                 if(play.is_expired()) await play.refreshToken()
                                 const spotifyData = await play.spotify(songArray[0].url)
                                 spotifyObj  = {
                                     name: spotifyData.name,
                                     artist: spotifyData.artists[0].name || null,
-                                    url: spotifyData.url
+                                    url: spotifyData.url,
+                                    thumbnail: spotifyData.thumbnail
                                 }
                                 searchSong = `${spotifyObj.name} ${spotifyObj.artist} audio`
                             } else {
-                                isSpotifyURL = false
+                                isSpotifyLink = false
                             }
-                            if(isSpotify) {
+                            if(isSpotifyLink) {
                                 const search = await play.search(String(searchSong))
                                 stream = await play.stream(search[0].url)
                             } else {
@@ -256,14 +259,16 @@ class Player extends EventEmmiter {
                     description: isSpotify ? undefined : searchRes[0].description,
                     duration: `${searchRes[0].durationRaw}`,
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
-                    metadata: options.metadata
+                    metadata: options.metadata,
+                    thumbnail: isSpotify ? spotifyObj.thumbnail : searchRes[0].thumbnails[0].url
                 }]
                 return {
                     title: `${isSpotify ? spotifyObj.name : searchRes[0].title}`,
                     description: isSpotify ? undefined : searchRes[0].description,
                     duration: `${searchRes[0].durationRaw}`,
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
-                    metadata: options.metadata
+                    metadata: options.metadata,
+                    thumbnail: isSpotify ? spotifyObj.thumbnail : searchRes[0].thumbnails[0].url
                 }
             },
             songs: this.songs[guildId],
@@ -278,7 +283,8 @@ class Player extends EventEmmiter {
                     spotifyObj  = {
                         name: spotifyData.name,
                         artist: spotifyData.artists[0].name || null,
-                        url: spotifyData.url
+                        url: spotifyData.url,
+                        thumbnail: spotifyData.thumbnail
                     }
                     searchSong = `${spotifyObj.name} ${spotifyObj.artist} audio`
                 } else {
@@ -293,14 +299,16 @@ class Player extends EventEmmiter {
                     description: isSpotify ? null : searchRes[0].description,
                     duration: `${searchRes[0].durationRaw}`,
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
-                    metadata: options.metadata
+                    metadata: options.metadata,
+                    thumbnail: isSpotify ? spotifyObj.thumbnail : searchRes[0].thumbnails[0].url
                 })
                 return {
                     title: `${isSpotify ? spotifyObj.name : searchRes[0].title}`,
                     description: isSpotify ? null : searchRes[0].description,
                     duration: `${searchRes[0].durationRaw}`,
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
-                    metadata: options.metadata
+                    metadata: options.metadata,
+                    thumbnail: isSpotify ? spotifyObj.thumbnail : searchRes[0].thumbnails[0].url
                 }
             },
             async setVolume(amount) {
@@ -331,9 +339,10 @@ class Player extends EventEmmiter {
                 songArr.splice(0, 1)
                 const newSong = songArr[0]
                 const spotifySongPattern = /^((https:)?\/\/)?open.spotify.com\/(track)\//;
-                let isSpotifyURL, spotifyObj, searchSong
+                let isSpotifySong
+                let spotifyObj, searchSong
                 if(String(newSong.url).match(spotifySongPattern)) {
-                    isSpotifyURL = true
+                    isSpotifySong = true
                     if(play.is_expired()) await play.refreshToken()
                     const spotifyData = await play.spotify(newSong.url)
                     spotifyObj = {
@@ -343,7 +352,7 @@ class Player extends EventEmmiter {
                     }
                     searchSong = `${spotifyObj.name} ${spotifyObj.artist} audio`
                 } else {
-                    isSpotifyURL = false
+                    isSpotifySong = false
                     searchSong = newSong.title
                 }
                 const search = await play.search(searchSong, {
@@ -503,7 +512,8 @@ class Player extends EventEmmiter {
                     spotifyObj  = {
                         name: spotifyData.name,
                         artist: spotifyData.artists[0].name || null,
-                        url: spotifyData.url
+                        url: spotifyData.url,
+                        thumbnail: spotifyData.thumbnail
                     }
                     searchSong = `${spotifyObj.name} ${spotifyObj.artist} audio`
                 } else {
@@ -518,14 +528,16 @@ class Player extends EventEmmiter {
                     description: isSpotify ? undefined : searchRes[0].description,
                     duration: `${searchRes[0].durationRaw}`,
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
-                    metadata: options.metadata
+                    metadata: options.metadata,
+                    thumbnail: isSpotify ? spotifyObj.thumbnail : searchRes[0].thumbnails[0].url
                 })
                 return {
                     title: `${isSpotify ? spotifyObj.name : searchRes[0].title}`,
                     description: isSpotify ? undefined : searchRes[0].description,
                     duration: `${searchRes[0].durationRaw}`,
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
-                    metadata: options.metadata
+                    metadata: options.metadata,
+                    thumbnail: isSpotify ? spotifyObj.thumbnail : searchRes[0].thumbnails[0].url
                 }
             },
             async setVolume(amount) {
