@@ -260,7 +260,7 @@ class Player extends EventEmmiter {
                     duration: `${searchRes[0].durationRaw}`,
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
                     metadata: options.metadata,
-                    thumbnail: isSpotify ? spotifyObj.thumbnail : searchRes[0].thumbnails[0].url
+                    thumbnail: isSpotify ? spotifyObj.thumbnail.url : searchRes[0].thumbnails[0].url
                 }]
                 return {
                     title: `${isSpotify ? spotifyObj.name : searchRes[0].title}`,
@@ -268,7 +268,7 @@ class Player extends EventEmmiter {
                     duration: `${searchRes[0].durationRaw}`,
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
                     metadata: options.metadata,
-                    thumbnail: isSpotify ? spotifyObj.thumbnail : searchRes[0].thumbnails[0].url
+                    thumbnail: isSpotify ? spotifyObj.thumbnail.url : searchRes[0].thumbnails[0].url
                 }
             },
             songs: this.songs[guildId],
@@ -300,7 +300,7 @@ class Player extends EventEmmiter {
                     duration: `${searchRes[0].durationRaw}`,
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
                     metadata: options.metadata,
-                    thumbnail: isSpotify ? spotifyObj.thumbnail : searchRes[0].thumbnails[0].url
+                    thumbnail: isSpotify ? spotifyObj.thumbnail.url : searchRes[0].thumbnails[0].url
                 })
                 return {
                     title: `${isSpotify ? spotifyObj.name : searchRes[0].title}`,
@@ -308,7 +308,7 @@ class Player extends EventEmmiter {
                     duration: `${searchRes[0].durationRaw}`,
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
                     metadata: options.metadata,
-                    thumbnail: isSpotify ? spotifyObj.thumbnail : searchRes[0].thumbnails[0].url
+                    thumbnail: isSpotify ? spotifyObj.thumbnail.url : searchRes[0].thumbnails[0].url
                 }
             },
             async setVolume(amount) {
@@ -529,7 +529,7 @@ class Player extends EventEmmiter {
                     duration: `${searchRes[0].durationRaw}`,
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
                     metadata: options.metadata,
-                    thumbnail: isSpotify ? spotifyObj.thumbnail : searchRes[0].thumbnails[0].url
+                    thumbnail: isSpotify ? spotifyObj.thumbnail.url : searchRes[0].thumbnails[0].url
                 })
                 return {
                     title: `${isSpotify ? spotifyObj.name : searchRes[0].title}`,
@@ -537,7 +537,7 @@ class Player extends EventEmmiter {
                     duration: `${searchRes[0].durationRaw}`,
                     url: `${isSpotify ? spotifyObj.url : searchRes[0].url}`,
                     metadata: options.metadata,
-                    thumbnail: isSpotify ? spotifyObj.thumbnail : searchRes[0].thumbnails[0].url
+                    thumbnail: isSpotify ? spotifyObj.thumbnail.url : searchRes[0].thumbnails[0].url
                 }
             },
             async setVolume(amount) {
