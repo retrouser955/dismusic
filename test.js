@@ -9,15 +9,17 @@ const client = new Client(
         partials: [Partials.Message]
     }
 )
+process.on('uncaughtException', console.error)
 const { Player }= require('./index.js')
 client.player = new Player(client, {
     spotify: {
-        client_id: 'spotify Client ID',
-        client_secret: 'spotify Client Secret',
-        token: "Spotify Request Token",
-        market: 'US' // market do not touch if you dont know
+        client_id: 'token',
+        client_secret: 'token',
+        token: "token",
+        market: 'US'
     }
 })
+
 client.player.on('trackStart', async (song, queueData) => {
     queueData.metaChannel.send(`Started playing track ${song.title}\n\nDuration: \`${song.duration}\`\nURL: ${song.url}\nrequestedBy: ${song.metadata.requestedBy.tag}`)
 })
@@ -88,8 +90,27 @@ client.on('messageCreate', async (message) => {
         const queue = await client.player.getQueue(message.guildId)
         queue.setVolume(newMsgContent)
     }
+    else if (message.content.startsWith('!nowplaying')) {
+        const queue = await client.player.getQueue(message.guildId)
+        const np = await queue.nowPlaying.getCurrent()
+        console.log(np)
+    } else if(message.content.startsWith('!playlist')) {
+        const queue = await client.player.getQueue(message.guildId)
+        const query = message.content.replace('!playlist ', '')
+        const playlist = await client.player.getPlaylist(query)
+        for(const key of playlist.tracks) {
+            queue.addSong(key.url, {
+                metadata: {
+                    requestedBy: message.author
+                }
+            })
+        }
+    }
 })
 .on('ready', () => {
+    client.player.getPlaylist('https://open.spotify.com/playlist/2Lr6wxuvlw98WuWeHnDnQ2?si=904dd5fb38cf49ab').then((list) => {
+        console.log(list)
+    })
     console.log(`Logged in as ${client.user.tag}`)
 })
-client.login(`Your token`)
+client.login(`token`)

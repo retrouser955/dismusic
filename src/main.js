@@ -6,6 +6,35 @@
  * @property {string} market The county that spotify should search in
  */
 /**
+ * @typedef {object} SpotifyTrack Represents a spotify track
+ * @property {string} name The name of the track
+ * @property {string} id The id of the track
+ * @property {string} type The type of the track
+ * @property {string} url The url of the track
+ * @property {boolean} explicit If the spotify track is explicit or not
+ * @property {boolean} playable If the song is playable or not
+ * @property {number} durationInMs The duration of the track in miliseconds
+ * @property {number} durationInSec The duration of the track in seconds
+ * @property {array} artists The artists of this track
+ * @property {object} album The album this track belongs to
+ * @property {object} thumbnail The thumbnail of the track
+ */
+/**
+ * @typedef {object} SpotifyAuthor
+ * @property {string} name The name of the author
+ * @property {string} url The url of the author
+ * @property {string} id The id of the author
+ */
+/**
+ * @typedef {object} SpotifyPlaylist Represent a spotify playlist
+ * @property {string} name The name of the playlist
+ * @property {string} thumbnail The thumbnail of the song
+ * @property {SpotifyAuthor} author The author of this playlist
+ * @property {string} description The description of this playlist
+ * @property {string} url The url of the playlist
+ * @property {SpotifyTrack[]} tracks The tracks this playlist contains
+ */
+/**
  * @typedef {object} Options
  * @property {SpotifyOptions} spotify The options for your spoify client
  */
@@ -17,6 +46,16 @@
  * @property {string} url The url of the song
  * @property {object} metadata The metadata of the song
  * @property {string} thumbnail The thumbnail of the song
+ */
+/**
+ * @typedef {object} CurrentSongObject Represent the current song playing
+ * @property {string} title The title of the song
+ * @property {string} description The description of the song
+ * @property {string} duration The duration of the song
+ * @property {string} url The url of the song
+ * @property {object} metadata The metadata of the song
+ * @property {string} thumbnail The thumbnail of the song
+ * @property {function} getCurrent Get the current time of the song
  */
 /**
  * @typedef {object} SongOptions
@@ -33,7 +72,18 @@
  * @property {function} pause pause the queue
  * @property {function} resume resume the queue
  * @property {function} setVolume set the volume
+ * @property {undefined | CurrentSongObject} nowPlaying Represents the current song playing the this guild
  */
+
+ async function getMinute(sec) {
+    if(sec < 60) return `0:${String(sec).length == 2 ? `${sec}` : `0${sec}`}`
+
+    const minute = Math.floor(sec / 60)
+    const newSecond = sec - minute * 60
+    if(String(newSecond).length === 1 && String(newSecond).endsWith('0')) return `${minute}:${newSecond}0`
+    if(String(newSecond).length === 2) return `${minute}:${newSecond}`
+    return `${minute}:0${newSecond}`
+}
 
 const play = require('play-dl')
 const EventEmmiter = require('node:events')
@@ -81,6 +131,7 @@ class Player extends EventEmmiter {
         this.songs = {}
         this.audioPlayers = {}
         this.audioResources = {}
+        this.timeStamps = {}
     }
     /**
      * Create a queue in your guild
@@ -98,6 +149,7 @@ class Player extends EventEmmiter {
         }
         this.queueData[guildId] = options.queueData
         const returnData = {
+            nowPlaying: undefined,
             skip: async () => {
                 const songArr = this.songs[guildId]
                 songArr.splice(0, 1)
@@ -160,6 +212,7 @@ class Player extends EventEmmiter {
             playSong: async (song, options) =>  {
                 if(!song) throw new Error('Dismusic Error: You cannot play a song without the song parameter')
                 if(!options.metadata) throw new Error('Dismusic Error: You must have a metadata for the song')
+                this.timeStamps[guildId] = Date.now()
                 let searchSong;
                 let isSpotify;
                 let spotifyObj;
@@ -207,6 +260,7 @@ class Player extends EventEmmiter {
                             songArray.splice(0, 1)
                             songArray[0].title
                             let stream;
+                            this.timeStamps[guildId] = Date.now()
                             const spotifySongPattern = /^((https:)?\/\/)?open.spotify.com\/(track)\//;
                             let spotifyObj, searchSong
                             let isSpotifyLink
@@ -245,6 +299,7 @@ class Player extends EventEmmiter {
                             this.queueData[guildId] = null
                             this.songs[guildId] = null
                             this.audioPlayers[guildId].stop()
+                            this.timeStamps[guildId] = null
                             try {
                                 return connection.destroy()
                             } catch {
@@ -332,6 +387,14 @@ class Player extends EventEmmiter {
         //     guild: guildId,
         //     song: 0
         // }
+        const nowPlaying = this.songs[guildId]
+        nowPlaying.getCurrent = async () => {
+            const ms1 = Math.floor(this.timeStamps[guildId] / 1000)
+            const ms2 = Math.floor(Date.now() / 1000)
+            const secDiff = ms2 - ms1
+            const mAndS = await getMinute(secDiff)
+            return mAndS
+        }
         const audioResource = this.audioResources[guildId]
         const returnData = {
             skip: async () => {
@@ -396,6 +459,7 @@ class Player extends EventEmmiter {
                 let searchSong;
                 let isSpotify;
                 let spotifyObj;
+                this.timeStamps[guildId] = Date.now()
                 const isYoutubeUrl = String(song).match(youtubeVideoPattern)
                 if(String(song).includes('https://open.spotify.com/track/')) {
                     isSpotify = true
@@ -434,6 +498,7 @@ class Player extends EventEmmiter {
                 connection.subscribe(this.audioPlayers[guildId])
                 this.audioPlayers[guildId].on('stateChange', async (_oldState, newState) => {
                     if(newState.status === 'idle') {
+                        this.timeStamps[guildId] = Date.now()
                         try {
                             const songArray = this.songs[guildId]
                             songArray.splice(0, 1)
@@ -546,7 +611,8 @@ class Player extends EventEmmiter {
                 if(Number(amount < 0) || Number(amount > 100)) throw new Error('Dismusic Error: Could not set the volume to lower than 0 or more than 100')
                 const newAmount = Number(amount) / 100
                 audioResource.volume.setVolume(newAmount)
-            }
+            },
+            nowPlaying: nowPlaying
         }
         return returnData
     }
@@ -559,6 +625,41 @@ class Player extends EventEmmiter {
         if(!guildId) throw new Error('Dismusic Error: A valid discord guild must be provided')
         if(this.queue[`${guildId}`] == null) return false
         return true
+    }
+    /**
+     * Valid if a string is a playlist URL
+     * @param {string} url The url you want to validate
+     * @returns {boolean} Return if the URL is true or false
+     */
+    async isPlaylist(url) {
+        if(!url) throw new Error(`Dismusic Error: Url must be a defined. Expected (string) Got (${typeof url})`)
+        if(typeof url != 'string') throw new Error(`Dismusic Error: Type of URL must be a string! Got ${typeof url}`)
+        const isPlaylist = await play.spotify(url)
+        if(isPlaylist.type === 'track') return false
+        return true 
+    }
+    /**
+     * 
+     * @param {string} url The url of the playlist
+     * @returns {SpotifyPlaylist} The spotify playlist
+     */
+    async getPlaylist(url) {
+        if(!url) throw new Error(`Dismusic Error: Url must be a defined. Expected (string) Got (${typeof url})`)
+        if(typeof url != 'string') throw new Error(`Dismusic Error: Type of URL must be a string! Got ${typeof url}`)
+        if(!(/^(https:)\/\/(open.spotify.com)\/(playlist|album)/).test(url)) throw new Error(`Dismusic Error: Provided URL is not a playlist`)
+        const sp = await play.spotify('https://open.spotify.com/playlist/3tlw09BYpSsBcn4pdKD2WL?si=4f1c6502f61340db')
+        const values = Array.from(sp.fetched_tracks.values())
+        const array = values[0]
+        const returnData = {
+            name: sp.name,
+            type: sp.type,
+            description: sp.description,
+            url: sp.url,
+            author: sp.owner,
+            tracks: array,
+            thumbnail: sp.thumbnail.url
+        }
+        return returnData
     }
 }
 
