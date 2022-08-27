@@ -88,6 +88,7 @@
 const play = require('play-dl')
 const EventEmmiter = require('node:events')
 const soundCloudURLRegexp = /(^(https:)\/\/(soundcloud.com)\/)/
+const spotifyRegExp = /(^(https:)\/\/(open.spotify.com)\/(track|playlist|album)\/)/
 const youtubeVideoPattern = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/
 const {
     joinVoiceChannel,
@@ -205,9 +206,17 @@ class Player extends EventEmmiter {
             },
             stop: async () => {
                 const connection = getVoiceConnection(guildId)
-                this.queue[`${guildId}`] = null
                 this.audioPlayers[guildId].stop()
-                connection.destroy()
+                this.queue[`${guildId}`] = null
+                this.queueData[guildId] = null
+                this.songs[guildId] = null
+                this.timeStamps[guildId] = null
+                this.audioPlayers[guildId] = null
+                try {
+                    return connection.destroy()
+                } catch {
+                    /** do nothing (literally) */
+                }
             },
             playSong: async (song, options) =>  {
                 if(!song) throw new Error('Dismusic Error: You cannot play a song without the song parameter')
@@ -449,9 +458,17 @@ class Player extends EventEmmiter {
             },
             stop: async () => {
                 const connection = getVoiceConnection(guildId)
-                this.queue[`${guildId}`] = null
                 this.audioPlayers[guildId].stop()
-                connection.destroy()
+                this.queue[`${guildId}`] = null
+                this.queueData[guildId] = null
+                this.songs[guildId] = null
+                this.timeStamps[guildId] = null
+                this.audioPlayers[guildId] = null
+                try {
+                    return connection.destroy()
+                } catch {
+                    /** do nothing (literally) */
+                }
             },
             playSong: async (song, options) =>  {
                 if(!song) throw new Error('Dismusic Error: You cannot play a song without the song parameter')
@@ -634,6 +651,7 @@ class Player extends EventEmmiter {
     async isPlaylist(url) {
         if(!url) throw new Error(`Dismusic Error: Url must be a defined. Expected (string) Got (${typeof url})`)
         if(typeof url != 'string') throw new Error(`Dismusic Error: Type of URL must be a string! Got ${typeof url}`)
+        if(!spotifyRegExp.test(url)) return false
         const isPlaylist = await play.spotify(url)
         if(isPlaylist.type === 'track') return false
         return true 
