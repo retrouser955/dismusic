@@ -665,7 +665,7 @@ class Player extends EventEmmiter {
         if(!url) throw new Error(`Dismusic Error: Url must be a defined. Expected (string) Got (${typeof url})`)
         if(typeof url != 'string') throw new Error(`Dismusic Error: Type of URL must be a string! Got ${typeof url}`)
         if(!(/^(https:)\/\/(open.spotify.com)\/(playlist|album)/).test(url)) throw new Error(`Dismusic Error: Provided URL is not a playlist`)
-        const sp = await play.spotify('https://open.spotify.com/playlist/3tlw09BYpSsBcn4pdKD2WL?si=4f1c6502f61340db')
+        const sp = await play.spotify(url)
         const values = Array.from(sp.fetched_tracks.values())
         const array = values[0]
         const returnData = {
