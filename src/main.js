@@ -74,16 +74,7 @@
  * @property {function} setVolume set the volume
  * @property {undefined | CurrentSongObject} nowPlaying Represents the current song playing the this guild
  */
-
- async function getMinute(sec) {
-    if(sec < 60) return `0:${String(sec).length == 2 ? `${sec}` : `0${sec}`}`
-
-    const minute = Math.floor(sec / 60)
-    const newSecond = sec - minute * 60
-    if(String(newSecond).length === 1 && String(newSecond).endsWith('0')) return `${minute}:${newSecond}0`
-    if(String(newSecond).length === 2) return `${minute}:${newSecond}`
-    return `${minute}:0${newSecond}`
-}
+const getMinute = require('./utils/time.js')
 
 const play = require('play-dl')
 const EventEmmiter = require('node:events')
@@ -124,7 +115,11 @@ class Player extends EventEmmiter {
             })
         }
         (async () => {
-            if(play.is_expired()) await play.refreshToken()
+            try {
+                if(play.is_expired()) await play.refreshToken()
+            } catch (error) {
+                console.log('[ Dismusic Warning ] Unable to refresh Spotify token')
+            }
         })()
         this.client = client
         this.queue = {}
