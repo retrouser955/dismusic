@@ -1,4 +1,6 @@
-const { joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior } = require('@discordjs/voice')
+const { joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior, createAudioResource } = require('@discordjs/voice')
+const play = require('play-dl')
+
 const voiceFunctions = {
     joinTo: async (guild, voice) => {
         const connection = joinVoiceChannel({
@@ -15,6 +17,17 @@ const voiceFunctions = {
             }
         })
         return player
+    },
+    createResource: async (changeableVolume, stream) => {
+        const resource = createAudioResource(stream.stream, {
+            inlineVolume: changeableVolume,
+            inputType: stream.type
+        })
+        return resource
+    },
+    getStream: async (resource) => {
+        const stream = await play.stream(resource)
+        return stream
     }
 }
 

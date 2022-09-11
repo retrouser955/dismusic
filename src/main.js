@@ -5,7 +5,7 @@ const { getData } = require('spotify-url-info')(fetch)
 const play = require('play-dl')
 const getMinute = require('./utils/time')
 class Player extends EventEmiter {
-    constructor(client, authCodes) {
+    constructor(client, authCodes, options) {
         if(!client) throw new Error('[ Dismusic Error ] A valid discord client is required to create a player')
         this.client = client
         this.queues = {}
@@ -27,6 +27,7 @@ class Player extends EventEmiter {
                 this.hasSpotifyToken = true
             })
         }
+        options?.volumeSetter ? this.changeableVolume = true : this.changeableVolume = false
     }
     async search(query) {
         if(!query) throw new Error('[ Dismusic Error ] A valid query must be provided')
@@ -46,7 +47,8 @@ class Player extends EventEmiter {
                     seconds: youtubeInfo.video_details.durationInSec
                 },
                 thumbnail: youtubeInfo.video_details.thumbnails[0].url,
-                type: "youtube_video"
+                type: "youtube_video",
+                url: youtubeInfo.video_details.url
             }
         }
         if(isSpotify) {
