@@ -5,3 +5,7 @@ auth.js
 
 # Spotify Data Files
 .data/
+
+# information files
+
+info.js

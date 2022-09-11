@@ -1,6 +1,5 @@
-const QueueRepeatMode = {
-    Queue: 1,
-    Song: 2,
-    None: 0
+class QueueRepeatMode {
+    None = 0
+    Song = 1
+    Queue = 2
 }
-module.exports = QueueRepeatMode
