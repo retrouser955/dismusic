@@ -4,6 +4,7 @@ const fetch = require('isomorphic-unfetch')
 const { getData } = require('spotify-url-info')(fetch)
 const play = require('play-dl')
 const getMinute = require('./utils/time')
+const QueueBuilder = require('./utils/Queue.js')
 class Player extends EventEmiter {
     constructor(client, authCodes, options) {
         if(!client) throw new Error('[ Dismusic Error ] A valid discord client is required to create a player')
@@ -56,7 +57,7 @@ class Player extends EventEmiter {
             try {
                 switch(isPlaylist) {
                     case true:
-                        const data = getData(query)
+                        const data = await getData(query)
                         return {
                             name: data.name,
                             type: "playlist",
@@ -70,7 +71,7 @@ class Player extends EventEmiter {
                             type: "spotify_playlist"
                         }
                     case false:
-                        const spotifyData = getData(query)
+                        const spotifyData = await getData(query)
                         return spotifyData
                 }
             } catch (error) {
@@ -155,7 +156,29 @@ class Player extends EventEmiter {
                     return undefined
             }
         }
-        const search = await play.search(query, {})
+        const search = await play.search(query, {
+            source: {
+                youtube: 'video'
+            }
+        })
+        return {
+            name: search[0].title,
+            description: search[0].description,
+            author: search[0].channel.name,
+            type: "youtube_video",
+            url: search[0].url,
+            tracks: null,
+            duration: {
+                raw: search[0].durationRaw,
+                seconds: search[0].durationInSec
+            }
+        }
+    }
+    async createQueue(guild, options) {
+        const queueFunctions = new QueueBuilder(guild, options)
+        this.queues[guild.id] = queueFunctions.create()
+        this.queues[guild.id].metadata = options.metadata
+        return this.queues[guild.id]
     }
 }
 
