@@ -10,8 +10,6 @@ class Player extends EventEmiter {
         if(!client) throw new Error('[ Dismusic Error ] A valid discord client is required to create a player')
         this.client = client
         this.queues = {}
-        this.players = {}
-        this.guilds = {}
         if(authCodes?.spotify) {
             play.getFreeClientID().then(async (id) => {
                 play.setToken({
@@ -27,6 +25,8 @@ class Player extends EventEmiter {
                 })
                 this.hasSpotifyToken = true
             })
+        } else {
+            console.log('[ Dismusic Warning ] Spotify data was not provided! This is required to fall back to play-dl when spotify-url-info returns undefined')
         }
         options?.volumeSetter ? this.changeableVolume = true : this.changeableVolume = false
     }
@@ -174,8 +174,25 @@ class Player extends EventEmiter {
             }
         }
     }
+    async getQueue(guild) {
+        const queue = this?.queues[guild.id]
+        return queue
+    }
+    async existsQueue(guild) {
+        const queue = this?.queues[guild.id]
+        if(queue) return true; return false
+    }
     async createQueue(guild, options) {
         const queueFunctions = new QueueBuilder(guild, options)
+        queueFunctions.on('EmitTrackStart', async (track) => {
+            const queue = await this.getQueue(guild)
+            this.emit('trackStart', queue, track)
+        })
+        queueFunctions.on('emitQueueEnded', async () => {
+            const queue = await this.getQueue(guild)
+            this.emit('queueEnded', queue)
+            delete this.queues[guild.id]
+        })
         this.queues[guild.id] = queueFunctions.create()
         this.queues[guild.id].metadata = options.metadata
         return this.queues[guild.id]

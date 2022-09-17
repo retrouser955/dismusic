@@ -27,8 +27,10 @@ class QueueBuilder extends EventEmiter {
                         const track = this.tracks.splice(0, 1)
                         const url = track.url
                         const audioRes = await handleRegexp(url)
-                        this.emit('EmitStateChange', track)
+                        this.emit('EmitTrackStart', track)
                         return player.play(audioRes)
+                    } else {
+                        this.emit('emitQueueEnded')
                     }
                 })
             },
