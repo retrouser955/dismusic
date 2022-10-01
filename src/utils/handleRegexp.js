@@ -1,9 +1,10 @@
 const regex = require('../constants/regex')
-const spotify = require('spotify-url-info')
+
 const fetch = require('isomorphic-unfetch')
+const { getData: sp }= require('spotify-url-info')(fetch)
 const play = require('play-dl')
 const { createAudioResource } = require('@discordjs/voice')
-const sp = await new spotify(fetch)
+
 const searchBasedOnRegexp = async (resource) => {
     if(regex.spotify.test(resource)) {
         let data

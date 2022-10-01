@@ -2,9 +2,7 @@ const googleIt = require('google-it')
 const play = require('play-dl')
 const fetch = require('isomorphic-unfetch')
 const { getData } = require('spotify-url-info')(fetch)
-
 const getMinute = require('./time.js')
-
 async function SoundCloudSearch(query) {
     const client = await play.getFreeClientID()
     await play.setToken({
