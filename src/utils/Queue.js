@@ -21,6 +21,7 @@ class QueueBuilder extends EventEmiter {
                 const isVoiceConnected = getVoiceConnection(this.guild.id) || null
                 if(!isVoiceConnected) throw new Error('[ Dismusic Error ] Player must be connected to voice before playing anything')
                 const { player } = await voice.playTrack(searchRes, this.options.useExtractor)
+                this.player = player
                 player.on('stateChange', async (_oldState, newState) => {
                     const status = newState.status
                     if(status === 'idle' && this.tracks.length !== 0) {
@@ -42,7 +43,7 @@ class QueueBuilder extends EventEmiter {
         }
         return {
             queue: queue,
-            resource: this.resource
+            player: this.player
         }
     }
 }
