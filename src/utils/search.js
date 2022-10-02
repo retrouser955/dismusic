@@ -1,7 +1,8 @@
 const googleIt = require('google-it')
 const play = require('play-dl')
 const fetch = require('isomorphic-unfetch')
-const { getData } = require('spotify-url-info')(fetch)
+const fs = require('fs')
+const { getData, getTracks } = require('spotify-url-info')(fetch)
 const getMinute = require('./time.js')
 async function SoundCloudSearch(query) {
     const client = await play.getFreeClientID()
@@ -136,10 +137,49 @@ async function SoundCloud(soundCloudUrl) {
     }]
 }
 
+async function SpotifyPlaylistInfo(query) {
+    const spotify = await getData(query)
+    return {
+        collaborative: spotify.collaborative,
+        description: spotify.description ?? null,
+        url: spotify.external_urls.spotify,
+        name: spotify.name,
+        author: spotify.owner.display_name,
+        tracks: []
+    }
+}
+
+async function SpotifyPlaylist(query) {
+    const spotifyData = await getTracks(query)
+    const promiseSpotifyData = await spotifyData.map(async track => {
+        const minute = await getMinute(Math.floor(track.duration_ms / 1000))
+        return {
+            name: track.name,
+            description: null,
+            rawData: track,
+            duration: {
+                formatted: minute,
+                raw: Math.floor(track.duration_ms / 1000)
+            },
+            url: track.external_urls.spotify,
+            author: {
+                name: track.artists[0].name,
+                thumbnail: null
+            },
+            thumbnail: track.album.images[0].url
+        }
+    })
+    const finalData = await Promise.all(promiseSpotifyData)
+    const spotifyPlaylistData = await SpotifyPlaylistInfo(query)
+    spotifyPlaylistData.tracks = finalData
+    return spotifyPlaylistData
+}
+
 module.exports = {
     SoundCloudSearch,
     Spotify,
     YouTubeSearch,
     YouTube,
-    SoundCloud
+    SoundCloud,
+    SpotifyPlaylist
 }

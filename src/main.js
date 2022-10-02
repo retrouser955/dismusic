@@ -61,6 +61,10 @@ class Player extends EventEmiter {
             const searchResults = await search.SoundCloud(query)
             return searchResults
         }
+        if(isSpotifyPlaylistUrl) {
+            const spotifyPlaylistData = await search.SpotifyPlaylist(query)
+            return spotifyPlaylistData
+        }
         if(!engine || engine === 'YouTube') {
             const searchResults = await search.YouTubeSearch(query)
             return searchResults
