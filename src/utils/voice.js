@@ -6,16 +6,18 @@ const voiceFunctions = {
         const connection = joinVoiceChannel({
             channelId: voice,
             guildId: guild.id,
-            adapterCreator: guild.adapterCreator()
+            adapterCreator: guild.voiceAdapterCreator
         })
         return connection
     },
-    playTrack: async (params, extractor) => {
+    playTrack: async (params, extractor, guild) => {
         let stream;
         typeof extractor == 'function' ? stream = await extractor(params) : stream = await play.stream(params.url)
-        const connection = getVoiceConnection(params.guild) || undefined
+        const connection = getVoiceConnection(guild.id) || undefined
         if(!connection) throw new Error('[ Dismusic Error ] Cannot play a resource without having a connection')
-        const resource = createAudioResource(stream)
+        const resource = createAudioResource(typeof extractor == 'function' ? stream : stream.stream, {
+            inputType: stream.type
+        })
         const player = createAudioPlayer({
             behaviors: {
                 noSubscriber: NoSubscriberBehavior.Play

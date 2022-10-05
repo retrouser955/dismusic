@@ -80,7 +80,7 @@ class Player extends EventEmiter {
     }
     async existsQueue(guild) {
         const queue = this?.queues[guild.id]
-        if(queue) return true; return false
+        return queue ? true : false
     }
     async createQueue(guild, options) {
         const queueFunctions = new QueueBuilder(guild, options)
@@ -90,6 +90,8 @@ class Player extends EventEmiter {
         })
         queueFunctions.on('emitQueueEnded', async () => {
             const queue = await this.getQueue(guild)
+            const connection = getVoiceConnection(guild.id) || undefined
+            connection.destroy()
             this.emit('queueEnded', queue)
             delete this.queues.players[guild.id]
             delete this.queues[guild.id]
@@ -106,6 +108,8 @@ class Player extends EventEmiter {
                 this.queues.players[guild.id].stop()
                 connection.destroy()
             } else if(status === 'idle') {
+                connection.destroy()
+            } else if(connection) {
                 connection.destroy()
             }
             delete this.queues[guild.id]

@@ -70,25 +70,24 @@ async function YouTubeSearch(query) {
         },
         limit: 5
     })
-    const returnArray = []
-    for(const ytData of youtube) {
-        returnArray.push({
-            name: ytData.title,
-            description: ytData.description,
-            rawData: ytData,
+    const results = youtube.map((track) => {
+        return {
+            name: track.title,
+            description: track.description,
+            rawData: track,
             duration: {
-                formatted: ytData.durationRaw,
-                raw: ytData.durationInSec
+                formatted: track.durationRaw,
+                raw: track.durationInSec
             },
-            url: ytData.url,
-            thumbnail: ytData.thumbnails[0].url,
+            url: track.url,
+            thumbnail: track.thumbnails[0].url,
             author: {
-                name: ytData.channel.name,
-                thumbnail: ytData.channel.icons[0].url
+                name: track.channel.name,
+                thumbnail: track.channel.icons[0].url
             }
-        })
-    }
-    return returnArray
+        }
+    })
+    return results
 }
 
 async function YouTube(query) {

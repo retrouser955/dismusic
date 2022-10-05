@@ -34,7 +34,7 @@ const searchBasedOnRegexp = async (resource) => {
         return audioRes
     }
     const stream = await play.stream(resource)
-    const audioRes = createAudioResource(stream)
+    const audioRes = createAudioResource(stream.stream)
     return audioRes
 }
 module.exports = searchBasedOnRegexp
