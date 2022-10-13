@@ -6,8 +6,6 @@ const play = require('play-dl')
 const QueueBuilder = require('./utils/Queue.js')
 const { getVoiceConnection } = require('@discordjs/voice')
 
-const { SearchResults } = require('../index')
-
 class Player extends EventEmiter {
     constructor(client, authCodes, options) {
         if(!client) throw new Error('[ Dismusic Error ] A valid discord client is required to create a player')
@@ -39,7 +37,6 @@ class Player extends EventEmiter {
      * Search a track
      * @param {String} query The query you want to search
      * @param {String} engine The place where you want to search. Can be 'YouTube' or 'SoundCloud'
-     * @returns {SearchResults}
      */
     async search(query, engine) {
         if(!query) throw new Error('[ Dismusic Error ] A valid query must be provided')
@@ -75,7 +72,8 @@ class Player extends EventEmiter {
         }
     }
     async getQueue(guild) {
-        const queue = this?.queues[guild.id]
+        const queue = this.queues[guild.id]
+        console.log(this.queues[guild.id])
         return queue
     }
     async existsQueue(guild) {

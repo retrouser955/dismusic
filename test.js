@@ -14,10 +14,9 @@ client.on('messageCreate', async (message) => {
     if(command === 'play') {
         const res = await player.search(args.join(' '))
         const existsQueue = await player.existsQueue(message.guild)
-        console.log(res[0])
         if(existsQueue) {
             const queue = await player.getQueue(message.guild)
-            message.reply('Adding tracks')
+            message.reply('<a:host_loading:1022886955266080789> Adding track(s) ' + res[0].name)
             queue.addTrack(res[0])
         } else {
             const queue = await player.createQueue(message.guild, {
@@ -27,8 +26,12 @@ client.on('messageCreate', async (message) => {
             })
             await queue.connectTo(message.member.voice.channel)
             queue.play(res[0])
-            message.reply('added tracks')
+            message.reply('<a:host_loading:1022886955266080789> Adding track(s) ' + res[0].name)
         }
+    }
+    if(command === 'skip') {
+        const queue = await player.getQueue(message.guild)
+        queue.skip()
     }
 })
 

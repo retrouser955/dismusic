@@ -1,7 +1,6 @@
 const googleIt = require('google-it')
 const play = require('play-dl')
 const fetch = require('isomorphic-unfetch')
-const fs = require('fs')
 const { getData, getTracks } = require('spotify-url-info')(fetch)
 const getMinute = require('./time.js')
 async function SoundCloudSearch(query) {
@@ -38,7 +37,8 @@ async function SoundCloudSearch(query) {
             name: playData.user.name,
             thumbnail: playData.user.thumbnail
         },
-        thumbnail: playData.thumbnail ?? 'https://www.pngitem.com/pimgs/m/522-5228247_soundcloud-logo-hd-png-download.png'
+        thumbnail: playData.thumbnail ?? 'https://www.pngitem.com/pimgs/m/522-5228247_soundcloud-logo-hd-png-download.png',
+        source: "SoundCloud"
     }]
 }
 
@@ -58,7 +58,8 @@ async function Spotify(url) {
         author: {
             name: spotifyData.artists[0].name,
             thumbnail: null
-        }
+        },
+        source: "Spotify"
     }]
     return returnData
 }
@@ -84,7 +85,8 @@ async function YouTubeSearch(query) {
             author: {
                 name: track.channel.name,
                 thumbnail: track.channel.icons[0].url
-            }
+            },
+            source: "YouTube"
         }
     })
     return results
@@ -105,7 +107,8 @@ async function YouTube(query) {
         author: {
             name: youtubeData.video_details.channel.name,
             thumnail: youtubeData.video_details.channel.iconURL()
-        }
+        },
+        source: "YouTube"
     }]
     return returnData
 }
@@ -132,7 +135,8 @@ async function SoundCloud(soundCloudUrl) {
             name: playData.user.name,
             thumbnail: playData.user.thumbnail
         },
-        thumbnail: playData.thumbnail ?? 'https://www.pngitem.com/pimgs/m/522-5228247_soundcloud-logo-hd-png-download.png'
+        thumbnail: playData.thumbnail ?? 'https://www.pngitem.com/pimgs/m/522-5228247_soundcloud-logo-hd-png-download.png',
+        source: "SoundCloud"
     }]
 }
 
@@ -165,7 +169,8 @@ async function SpotifyPlaylist(query) {
                 name: track.artists[0].name,
                 thumbnail: null
             },
-            thumbnail: track.album.images[0].url
+            thumbnail: track.album.images[0].url,
+            source: "Spotify"
         }
     })
     const finalData = await Promise.all(promiseSpotifyData)
