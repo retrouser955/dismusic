@@ -96,6 +96,17 @@ class QueueBuilder extends EventEmiter {
                 const currentTracks = this.tracks
                 const newTracks = [...currentTracks, ...playlist]
                 this.tracks = newTracks
+            },
+            isPaused: true,
+            async pause() {
+                const audioPlayer = emit.player
+                audioPlayer.pause()
+                this.isPaused = true
+            },
+            async resume() {
+                const audioPlayer = emit.player
+                audioPlayer.unpause()
+                this.isPaused = false
             }
         }
         return {
