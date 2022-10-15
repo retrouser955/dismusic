@@ -17,7 +17,7 @@ const voiceFunctions = {
         if(!connection) throw new Error('[ Dismusic Error ] Cannot play a resource without having a connection')
         const resource = createAudioResource(typeof extractor == 'function' ? stream : stream.stream, {
             inputType: stream.type,
-            inlineVolume: params.volumeChanger || true
+            inlineVolume: params.changeableVolume || true
         })
         const player = createAudioPlayer({
             behaviors: {

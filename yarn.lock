@@ -307,10 +307,10 @@ clean-css@^4.2.1:
   dependencies:
     source-map "~0.6.0"
 
-clean-jsdoc-theme@^4.1.6:
-  version "4.1.6"
-  resolved "https://registry.npmjs.org/clean-jsdoc-theme/-/clean-jsdoc-theme-4.1.6.tgz#e13ffba8f618c32b9a8cee248299f5fe77b4539a"
-  integrity sha512-Nt16VBh5+owNKM48zvmLZDWILf/visQ5GMEfLR4nTg9uqOlDe7LIa+wrfVwA0vzY6CFEq5uxmbd7Jxk5hJ7S6w==
+clean-jsdoc-theme@^4.1.8:
+  version "4.1.8"
+  resolved "https://registry.npmjs.org/clean-jsdoc-theme/-/clean-jsdoc-theme-4.1.8.tgz#372b40e0c304b8bc36e0f400156fa6bb1d18d77a"
+  integrity sha512-GY/wflOxRnctu2zhRrJwHwIyiGlTtk4+402TRYIIp6/bWcnFd+aFRiiXscPvOpu/HWV7atIzyTaFXYPFY0b0cA==
   dependencies:
     fs-extra "^10.1.0"
     html-minifier "^4.0.0"

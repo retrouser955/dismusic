@@ -1,13 +1,49 @@
+/**
+ * @typedef {Object} SpotifyAuth The auth codes for spotify
+ * @property {string} clientId The client ID of your spotify application
+ * @property {string} clientSecret The client secret of your spotify application
+ * @property {string} refresh_token the refresh token for your spotify application
+ * @property {string|undefined} market the market to search on spotify
+ */
+/**
+ * @typedef {Object} AuthCodes The auth codes for the client
+ * @property {SpotifyAuth} spotify The Spotify Auth codes
+ */
+/**
+ * @callback play
+ * @param {object} serachRes the value which the .serach function would return
+ * @return {undefined}
+ */
+/**
+ * @typedef {object} Queue The queue of a guild
+ * @property {play} play Play a song in the queue
+ * @property {function} addTrack Add a track to the queue. The params should be the serach results
+ * @property {function} addTracks Add multiple tracks to the queue. The params should be the serach results
+ * @property {function} skip Skip the current song in the queue.
+ * @property {function} pause pause the current song in the queue.
+ * @property {function} resume resume the current song in the queue
+ * @property {function} connectTo Connect to a voice channel. The param should be the channel you want to connect to
+ * @property {boolean} isPaused Tells you if the queue is paused or not
+ */
+/**
+ * @typedef {object} QueueDefinitionOptions The options for creating a queue
+ * @property {boolean} changeableVolume whether the bot can change the volume. Will increase performance load
+ */
+
 const EventEmiter = require('node:events')
 const regexpConstants = require('./constants/regex')
 const search = require('./utils/search')
 const play = require('play-dl')
-// const getMinute = require('./utils/time')
 const QueueBuilder = require('./utils/Queue.js')
 const { getVoiceConnection } = require('@discordjs/voice')
 
 class Player extends EventEmiter {
-    constructor(client, authCodes, options) {
+    /**
+     * Create a new Dismusic Player
+     * @param {Object} client The discord.js Client you want to use
+     * @param {AuthCodes|undefined} authCodes The auth code for spotify
+     */
+    constructor(client, authCodes) {
         if(!client) throw new Error('[ Dismusic Error ] A valid discord client is required to create a player')
         super()
         this.client = client
@@ -31,7 +67,6 @@ class Player extends EventEmiter {
         } else {
             console.log('[ Dismusic Warning ] Spotify data was not provided! This is required to fall back to play-dl when spotify-url-info returns undefined')
         }
-        options?.volumeSetter ? this.changeableVolume = true : this.changeableVolume = false
     }
     /**
      * Search a track
@@ -71,15 +106,30 @@ class Player extends EventEmiter {
             return searchResults
         }
     }
+    /**
+     * Get the existing Queue of a guild
+     * @param {object} guild The guild of the queue you want to get
+     * @returns {Queue} The queue of guild
+     */
     async getQueue(guild) {
         const queue = this.queues[guild.id]
-        console.log(this.queues[guild.id])
         return queue
     }
+    /**
+     * Check if the queue exists in a guild
+     * @param {object} guild the guild you want to validate
+     * @returns {boolean} true if the guild exists in the queue, false otherwise
+     */
     async existsQueue(guild) {
         const queue = this?.queues[guild.id]
         return queue ? true : false
     }
+    /**
+     * 
+     * @param {object} guild the guild you want to create a queue for
+     * @param {QueueDefinitionOptions} options The options for creating a queue
+     * @returns {Queue} The queue you just created
+     */
     async createQueue(guild, options) {
         const queueFunctions = new QueueBuilder(guild, options)
         queueFunctions.on('EmitTrackStart', async (track) => {
@@ -97,7 +147,7 @@ class Player extends EventEmiter {
         const { queue, player } = await queueFunctions.create()
         this.queues[guild.id] = queue
         this.queues.players[guild.id] = player
-        this.queues[guild.id].metadata = options.metadata
+        this.queues[guild.id].metadata = options?.metadata || undefined
         this.queues.players[guild.id] 
         this.queues[guild.id].kill = async () => {
             const connection = getVoiceConnection(guild.id) || undefined

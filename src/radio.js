@@ -12,13 +12,25 @@ const {
     getVoiceConnection,
     createAudioPlayer,
     NoSubscriberBehavior,
-    StreamType
+    StreamType,
+    AudioPlayer,
+    VoiceConnection
 } = require('@discordjs/voice')
 class RadioClient {
+    /**
+     * Create a new radio Client
+     * @param {object} client The discord.js client
+     */
     constructor(client) {
         if(!client) throw new Error('[ Dismusic Error ] A valid discord client is required to create a player')
         this.client = client
     }
+    /**
+     * Join a voice channel
+     * @param {object} voice The member's voice state <member>.voice
+     * @param {object} guild The discord.js guild
+     * @returns {VoiceConnection}
+     */
     async connectTo(voice, guild) {
         const connection = joinVoiceChannel({
             channelId: voice.channel.id,
@@ -27,6 +39,12 @@ class RadioClient {
         })
         return connection
     }
+    /**
+     * Start playing a station in your voice channel
+     * @param {string} resource The MP3 link of your radio channel.
+     * @param {object} guild the guild
+     * @returns {AudioPlayer}
+     */
     async startPlaying(resource, guild) {
         const connection = getVoiceConnection(guild.id)
         const res = createAudioResource(resource, {

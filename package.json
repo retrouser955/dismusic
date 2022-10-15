@@ -1,6 +1,6 @@
 {
   "name": "dismusic",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "An easy music package for discord.js version 14",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "@discordjs/opus": "^0.8.0",
     "@discordjs/voice": "^0.11.0",
     "axios": "^1.1.2",
-    "clean-jsdoc-theme": "^4.1.6",
+    "clean-jsdoc-theme": "^4.1.8",
     "discord.js": "^14.0.3",
     "ffmpeg-static": "^5.0.2",
     "google-it": "^1.6.3",
