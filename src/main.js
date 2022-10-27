@@ -14,21 +14,6 @@
  * @param {object} serachRes the value which the .serach function would return
  * @return {undefined}
  */
-/**
- * @typedef {object} Queue The queue of a guild
- * @property {play} play Play a song in the queue
- * @property {function} addTrack Add a track to the queue. The params should be the serach results
- * @property {function} addTracks Add multiple tracks to the queue. The params should be the serach results
- * @property {function} skip Skip the current song in the queue.
- * @property {function} pause pause the current song in the queue.
- * @property {function} resume resume the current song in the queue
- * @property {function} connectTo Connect to a voice channel. The param should be the channel you want to connect to
- * @property {boolean} isPaused Tells you if the queue is paused or not
- */
-/**
- * @typedef {object} QueueDefinitionOptions The options for creating a queue
- * @property {boolean} changeableVolume whether the bot can change the volume. Will increase performance load
- */
 
 const EventEmiter = require('node:events')
 const regexpConstants = require('./constants/regex')
@@ -127,8 +112,8 @@ class Player extends EventEmiter {
     /**
      * 
      * @param {object} guild the guild you want to create a queue for
-     * @param {QueueDefinitionOptions} options The options for creating a queue
-     * @returns {Queue} The queue you just created
+     * @param {object} options The options for creating a queue
+     * @returns {QueueBuilder} The queue you just created
      */
     async createQueue(guild, options) {
         const queueFunctions = new QueueBuilder(guild, options)
@@ -139,12 +124,17 @@ class Player extends EventEmiter {
         queueFunctions.on('emitQueueEnded', async () => {
             const queue = await this.getQueue(guild)
             const connection = getVoiceConnection(guild.id) || undefined
-            connection.destroy()
+            try {
+                connection.destroy()
+            } catch (error) {
+                // no?
+            }
             this.emit('queueEnded', queue)
             delete this.queues.players[guild.id]
             delete this.queues[guild.id]
         })
-        const { queue, player } = await queueFunctions.create()
+        const queue = queueFunctions
+        const player = queueFunctions.player
         this.queues[guild.id] = queue
         this.queues.players[guild.id] = player
         this.queues[guild.id].metadata = options?.metadata || undefined

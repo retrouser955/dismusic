@@ -1,172 +1,69 @@
 # Dismusic
 
-A fast and easy music library for Discord.js Version 14 made with play-dl and @discordjs/voice
+Dismusic, a performance focused music system made for Discord.js version 14
 
-# Installation
+# Getting start
+
+Install Dismusic
 
 ```bash
-npm i dismusic
-# or yarn
-yarn add dismusic
+npm i dismusic@latest
 ```
 
-# Using the package
-
-First you must intstall ffmpeg-static (or just ffmpeg) and @discordjs/opus. (Python might be required for @discordjs/opus)
+Then install ffmpeg-static and @discordjs/opus
 
 ```bash
 npm i ffmpeg-static @discordjs/opus
 ```
 
-Next, we can create a discord js client
+### Create a discord bot using discord.js
 
 ```js
-const {
-    Client,
-    GatewayIntentBits: Intents,
-    Partials
-} = require('discord.js')
-const client = new Client(
-    {
-        intents: [Intents.Guilds, Intents.GuildVoiceStates, Intents.MessageContent, Intents.GuildMessages],
-        partials: [Partials.Message]
-    }
-)
-```
-
-Guild Voice State is required for this package
-
-Then we can add dismusic to it
-
-```js
-const {
-    Client,
-    GatewayIntentBits: Intents,
-    Partials
-} = require('discord.js')
-const client = new Client(
-    {
-        intents: [Intents.Guilds, Intents.GuildVoiceStates, Intents.MessageContent, Intents.GuildMessages],
-        partials: [Partials.Message]
-    }
-)
 const { Player } = require('dismusic')
-client.player = new Player(client, {
-        spotify: {
-        client_id: 'spotify Client ID',
-        client_secret: 'spotify Client Secret',
-        token: "Spotify Request Token",
-        market: 'US' // market do not touch if you dont know
-    }
+const { Client, GatewayIntentBits: Intents } = require('discord.js')
+const client = new Client({
+    intents: [Intents.Guilds, Intents.GuildVoiceStates, Intents.MessageContent, Intents.GuildMessages]
 })
-```
-To get the spotify client id, client secret and request token, visit the play-dl docs [here](https://github.com/play-dl/play-dl/tree/main/instructions#spotify)
+const player = new Player(client)
 
-We can then add listeners
+player.on('trackStart', async function(queue, track) {
+    console.log(queue, track)
+})
 
-```js
-const {
-    Client,
-    GatewayIntentBits: Intents,
-    Partials
-} = require('discord.js')
-const client = new Client(
-    {
-        intents: [Intents.Guilds, Intents.GuildVoiceStates, Intents.MessageContent, Intents.GuildMessages],
-        partials: [Partials.Message]
-    }
-)
-const { Player } = require('dismusic')
-client.player = new Player(client, {
-        spotify: {
-        client_id: 'spotify Client ID',
-        client_secret: 'spotify Client Secret',
-        token: "Spotify Request Token",
-        market: 'US' // market do not touch if you dont know
-    }
-})
-client.player.on('trackStart', async (song, queueData) => {
-    queueData.metaChannel.send(`Started playing track ${song.title}\n\nDuration: \`${song.duration}\`\nURL: ${song.url}\nrequestedBy: ${song.metadata.requestedBy.tag}`)
-})
-.on('queueEnded', (queueData) => {
-    queueData.metaChannel.send(`There are no more songs in the queue. Leaving 👋`)
-})
 client.on('messageCreate', async (message) => {
     if(!message.content.startsWith('!')) return
-    if(message.content.startsWith('!play ')) {
-        if(!message.member.voice.channelId) return message.channel.send('Please join a voice channel')
-        if(message.guild.me.voice.channel && message.member.voice.channelId !== message.guild.me.voice.channelId) return message.channel.send('Please join my voice channel')
-        const args = message.content.replace('!play ', '')
-        const existQueue = await client.player.existQueue(message.guildId)
-        if(existQueue) {
-            const existingQueue = await client.player.getQueue(message.guildId)
-            message.channel.send(`🔍 | Searching for ${args}`).then(async msg => {
-                const song = await existingQueue.addSong(args, {
-                    metadata: {
-                        requestedBy: message.author
-                    }
-                })
-                msg.edit(`Added ${song.title} to the queue\n\nDuration: \`${song.duration}\`\nURL: ${song.url}`)
+    const raw = message.content.replace('!', '')
+    const args = raw.split(' ')
+    const command = args.splice(0, 1)[0]
+    if(command === 'play') {
+        const res = await player.search(args.join(' '))
+        const existsQueue = await player.existsQueue(message.guild)
+        if(existsQueue) {
+            const queue = await player.getQueue(message.guild)
+            message.reply('<a:host_loading:1022886955266080789> Adding track(s) ' + res[0].name)
+            queue.addTrack(res[0])
+        } else {
+            const queue = await player.createQueue(message.guild, {
+                // metadata will stay with the queue until it is destroyed
+                metadata: {
+                    channel: message.channel
+                }
             })
-            return
+            await queue.connectTo(message.member.voice.channel)
+            queue.play(res[0])
+            message.reply('<a:host_loading:1022886955266080789> Adding track(s) ' + res[0].name)
         }
-        const queue = await client.player.createQueue(message.guildId, {
-            queueData: {
-                metaChannel: message.channel
-            }
-        })
-        try {
-            queue.connect(message.member.voice.channel)
-        } catch {
-            return message.channel.send('there was an error while connecting to your voice channel')
-        }
-        const song = await queue.playSong(args, {
-            metadata: {
-                requestedBy: message.author
-            }
-        })
-        message.channel.send(`Joined <#${message.member.voice.channelId}> and started playing ${song.title}\n\nDuration: \`${song.duration}\`\nURL: ${song.url}`)
-    } else if (message.content === '!stop') {
-        if(!message.member.voice.channelId) return message.channel.send('Please join a voice channel')
-        if(message.guild.me.voice.channel && message.member.voice.channelId !== message.guild.me.voice.channelId) return message.channel.send('Please join my voice channel')
-        const queue = await client.player.getQueue(message.guildId)
-        queue.stop()
-    } else if (message.content === '!queue') {
-        if(!message.member.voice.channelId) return message.channel.send('Please join a voice channel')
-        if(message.guild.me.voice.channel && message.member.voice.channelId !== message.guild.me.voice.channelId) return message.channel.send('Please join my voice channel')
-        const queue = await client.player.getQueue(message.guildId)
-        const queueSongs = []
-        for(const songs of queue.songs) {
-            queueSongs.push(`${songs.title} ([link](${songs.url}))`)
-        }
-        message.channel.send({
-            embeds: [{
-                title: 'Queue',
-                description: queueSongs.join('\n')
-            }]
-        })
-    } else if (message.content === '!pause') {
-        if(!message.member.voice.channelId) return message.channel.send('Please join a voice channel')
-        if(message.guild.me.voice.channel && message.member.voice.channelId !== message.guild.me.voice.channelId) return message.channel.send('Please join my voice channel')
-        const queue = await client.player.getQueue(message.guildId)
-        queue.pause()
-    } else if (message.content === '!resume') {
-        if(!message.member.voice.channelId) return message.channel.send('Please join a voice channel')
-        if(message.guild.me.voice.channel && message.member.voice.channelId !== message.guild.me.voice.channelId) return message.channel.send('Please join my voice channel')
-        const queue = await client.player.getQueue(message.guildId)
-        queue.resume()
-    } else if (message.content === '!skip') {
-        if(!message.member.voice.channelId) return message.channel.send('Please join a voice channel')
-        if(message.guild.me.voice.channel && message.member.voice.channelId !== message.guild.me.voice.channelId) return message.channel.send('Please join my voice channel')
-        const queue = await client.player.getQueue(message.guildId)
-        message.channel.send(`Skipping ${queue.songs[0].title}`)
+    }
+    if(command === 'skip') {
+        const queue = await player.getQueue(message.guild)
         queue.skip()
     }
 })
-client.login('your bot token')
-```
 
-⚠ This package is still in development. If you encountered a bug, open an issue at our github page
+client.on('ready', () => console.log(`Logged in as ${client.user.tag}`))
+
+client.login('')
+```
 
 There are docs for the package [here](https://retrouser955.github.io/dismusic/)
 

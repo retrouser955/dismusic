@@ -9,6 +9,7 @@
   "author": "retro_ig",
   "license": "MIT",
   "dependencies": {
+    "@discordjs/docgen": "^0.12.1",
     "@discordjs/opus": "^0.8.0",
     "@discordjs/voice": "^0.11.0",
     "axios": "^1.1.2",
@@ -27,5 +28,15 @@
     "type": "git",
     "url": "https://github.com/retrouser955/dismusic"
   },
-  "homepage": "https://retrouser955.github.io/dismusic/"
+  "homepage": "https://retrouser955.github.io/dismusic/",
+  "keywords": [
+    "discord",
+    "discord.js",
+    "discord-music",
+    "music",
+    "youtube",
+    "spotify",
+    "soundcloud",
+    "framework"
+  ]
 }
