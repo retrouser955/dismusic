@@ -9,11 +9,6 @@
  * @typedef {Object} AuthCodes The auth codes for the client
  * @property {SpotifyAuth} spotify The Spotify Auth codes
  */
-/**
- * @callback play
- * @param {object} serachRes the value which the .serach function would return
- * @return {undefined}
- */
 
 const EventEmiter = require('node:events')
 const regexpConstants = require('./constants/regex')
