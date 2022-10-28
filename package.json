@@ -1,27 +1,43 @@
 {
   "name": "dismusic",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "An easy music package for discord.js version 14",
   "main": "index.js",
   "scripts": {
-    "test": "echo hello"
+    "test": "echo hello",
+    "docs": "cd docs && docgen --custom docs.yml --output docs.json -i ../src --spaces 4 && cd .."
   },
   "author": "retro_ig",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/opus": "^0.8.0",
     "@discordjs/voice": "^0.11.0",
-    "clean-jsdoc-theme": "^4.1.6",
+    "axios": "^1.1.2",
+    "clean-jsdoc-theme": "^4.1.8",
     "discord.js": "^14.0.3",
     "ffmpeg-static": "^5.0.2",
+    "google-it": "^1.6.3",
+    "isomorphic-unfetch": "^3.1.0",
     "libsodium-wrappers": "^0.7.10",
     "play-dl": "^1.9.5",
-    "time-convert": "^0.0.2"
+    "request": "^2.88.2",
+    "spotify-url-info": "^3.1.8"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@devsnowflake/docgen": "https://github.com/CesiumLabs/docgen.git"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/retrouser955/dismusic"
   },
-  "homepage": "https://retrouser955.github.io/dismusic/"
+  "homepage": "https://retrouser955.github.io/dismusic/",
+  "keywords": [
+    "discord",
+    "discord.js",
+    "discord-music",
+    "music",
+    "youtube",
+    "spotify",
+    "soundcloud",
+    "framework"
+  ]
 }
