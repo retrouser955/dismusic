@@ -1,2 +1,6 @@
+# Docs
 docs/
+jsdoc.json
+
+# Testing files
 test.js

@@ -94,7 +94,7 @@ class Player extends EventEmiter {
     /**
      * Get the existing Queue of a guild
      * @param {object} guild The guild of the queue you want to get
-     * @returns {Queue} The queue of guild
+     * @returns {QueueBuilder} The queue of guild
      */
     async getQueue(guild) {
         const queue = this.queues[guild.id]
@@ -105,7 +105,7 @@ class Player extends EventEmiter {
      * @param {object} guild the guild you want to validate
      * @returns {boolean} true if the guild exists in the queue, false otherwise
      */
-    async existsQueue(guild) {
+    existsQueue(guild) {
         const queue = this?.queues[guild.id]
         return queue ? true : false
     }

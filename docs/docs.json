@@ -2,7 +2,7 @@
     "meta": {
         "generator": "0.10.0",
         "format": 20,
-        "date": 1666930975489
+        "date": 1666965849323
     },
     "custom": {
         "general": {
@@ -120,7 +120,7 @@
                         "types": [
                             [
                                 [
-                                    "Queue"
+                                    "QueueBuilder"
                                 ]
                             ]
                         ],
@@ -148,7 +148,6 @@
                             ]
                         }
                     ],
-                    "async": true,
                     "returns": {
                         "types": [
                             [
