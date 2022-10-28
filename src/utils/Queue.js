@@ -173,6 +173,7 @@ class QueueBuilder extends EventEmiter {
     async pause() {
         const audioPlayer = emit.player
         audioPlayer.pause()
+        this.pausedTimeStamp = Date.now()
         this.isPaused = true
     }
     /**
@@ -180,7 +181,11 @@ class QueueBuilder extends EventEmiter {
      */
     async resume() {
         const audioPlayer = emit.player
-        audioPlayer.unpause()
+        if(this.isPaused) {
+            audioPlayer.unpause()
+            const pausedTimeStamp = this.pausedTimeStamp - Date.now()
+            this.timestamp = this.timestamp - pausedTimeStamp
+        }
         this.isPaused = false
     }
     /**
