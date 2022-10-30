@@ -171,7 +171,7 @@ class QueueBuilder extends EventEmiter {
      * Pause the player
      */
     async pause() {
-        const audioPlayer = emit.player
+        const audioPlayer = this.player
         audioPlayer.pause()
         this.pausedTimeStamp = Date.now()
         this.isPaused = true
@@ -180,7 +180,7 @@ class QueueBuilder extends EventEmiter {
      * resume the player
      */
     async resume() {
-        const audioPlayer = emit.player
+        const audioPlayer = this.player
         if(this.isPaused) {
             audioPlayer.unpause()
             const pausedTimeStamp = this.pausedTimeStamp - Date.now()
@@ -214,7 +214,7 @@ class QueueBuilder extends EventEmiter {
      */
     async getCurrentTrack() {
         const obj = this.tracks[0]
-        const soFar = Math.floor(Date.now() / 1000) - Math.floor(emit.timestamp / 1000)
+        const soFar = Math.floor(Date.now() / 1000) - Math.floor(this.timestamp / 1000)
         const time = await getMinute(soFar)
         obj.currentTime = time
         return obj
