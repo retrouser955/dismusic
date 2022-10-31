@@ -25,7 +25,7 @@
           },
           {
             "name": "description",
-            "content": "A complete framework to implement a musc system using discord.js v14"
+            "content": "A complete framework to implement a music system using discord.js v14"
           }
         ],
         "title": "Dismusic"
