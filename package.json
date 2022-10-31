@@ -1,11 +1,11 @@
 {
   "name": "dismusic",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "An easy music package for discord.js version 14",
   "main": "index.js",
   "scripts": {
     "test": "echo hello",
-    "docs": "cd docs && docgen --custom docs.yml --output docs.json -i ../src --spaces 4 && cd .."
+    "docs": "jsdoc -c docs_config/jsdoc.json"
   },
   "author": "retro_ig",
   "license": "MIT",

@@ -33,12 +33,13 @@ client.on('messageCreate', async (message) => {
     const raw = message.content.replace('!', '')
     const args = raw.split(' ')
     const command = args.splice(0, 1)[0]
-
-    const connection = radioClient.connectTo(message.member.voice, message.guild)
-    const player = radioClient.startPlaying("https://stream.radiofomix.nl/listen/fomix/stream", message.guild)
-    // The first argument **MUST** be a audio node that is streaming though https. Does not work with YouTube links
+    
+    if(command === "!start") {
+        const connection = radioClient.connectTo(message.member.voice, message.guild)
+        const player = radioClient.startPlaying("https://stream.radiofomix.nl/listen/fomix/stream", message.guild)
+        // The first argument **MUST** be a audio node that is streaming though https. Does not work with YouTube links
+    }
 })
 
 client.login('TOKEN GOES HERE')
 ```
-
