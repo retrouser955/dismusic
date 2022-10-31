@@ -1,5 +1,5 @@
 const voice = require('./voice.js')
-const { getVoiceConnection, createAudioResource, joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior } = require('@discordjs/voice')
+const { getVoiceConnection, createAudioResource, joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior, AudioPlayer, VoiceConnection } = require('@discordjs/voice')
 const EventEmiter = require('node:events')
 const search = require('./search.js')
 const play = require('play-dl')
@@ -10,6 +10,13 @@ class QueueBuilder extends EventEmiter {
      * Create a new queue
      * @param {Object} guild The guild of the discord server
      * @param {object} options The options for the queue. Automatically configed by Dismusic
+     * @property {object} guild The guild of the queue
+     * @property {AudioPlayer} player The player that is used for playing music
+     * @property {number} volume The current volume of this queue
+     * @property {boolean} isPaused Tells you whether this queue is paused
+     * @property {VoiceConnection|undefined} connection The raw discord.js connection for the voice channel connected
+     * @property {string} loopMode The current loop mode of this queue. It is none, queue or song
+     * @property {Object[]} tracks The current tracks in this queue
      */
     constructor(guild, options) {
         super()
@@ -28,6 +35,7 @@ class QueueBuilder extends EventEmiter {
             }
         })
     }
+
     /**
      * Play something in the voice channel
      * @param {object} searchRes The search Results you got from <player>.search function
@@ -57,7 +65,10 @@ class QueueBuilder extends EventEmiter {
             const status = newState.status
             if(status === 'idle' && this.tracks.length !== 0) {
                 const track = this.tracks.splice(0, 1)
-                if(loopMode === 'queue') this.tracks.push(track)
+                if(loopMode === 'queue') {
+                    this.tracks.push(track);
+                    this.audioRes.volume.setVolume(this.volume)
+                }
                 if(loopMode === 'song') {
                     if(track.source === "YouTube" || track.source === "SoundCloud") {
                         const stream = await play.stream(latestTrack.url)
@@ -78,6 +89,7 @@ class QueueBuilder extends EventEmiter {
                     this.emit('EmitTrackStart', track)
                     this.timestamp = Date.now()
                     this.isPaused = false
+                    this.audioRes.volume.setVolume(this.volume)
                     return
                 }
                 if(this.tracks.length === 0) return this.emit('emitQueueEnded')
@@ -99,6 +111,7 @@ class QueueBuilder extends EventEmiter {
                 }
                 this.audioRes = audioRes
                 player.play(audioRes)
+                this.audioRes.volume.setVolume(this.volume)
                 this.emit('EmitTrackStart', latestTrack)
                 this.timestamp = Date.now()
             } else if(this.tracks.length === 0 && status !== "playing") {
