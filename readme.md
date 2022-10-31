@@ -2,7 +2,7 @@
 
 Dismusic, a performance focused music system made for Discord.js version 14
 
-# Getting start
+# Getting started
 
 Install Dismusic
 

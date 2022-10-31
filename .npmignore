@@ -1,7 +1,7 @@
 # Docs
 docs/
 jsdoc.json
-docs_v2/
+docs_config/
 
 # Testing files
 test.js
