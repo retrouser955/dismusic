@@ -194,6 +194,7 @@ class QueueBuilder extends EventEmiter {
      */
     async setVolume(amount) {
         if(!amount) throw new Error('[ Dismusic Error ] Amount must be provided')
+        const audioResource = this.audioRes
         if(!audioResource) throw new Error('[ Dismusic Error ] Could not find audio resources for this guild')
         if(Number(amount < 0) || Number(amount > 100)) throw new Error('[ Dismusic Error ] Could not set the volume to lower than 0 or more than 100')
         const newAmount = Number(amount) / 100
