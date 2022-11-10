@@ -28,7 +28,7 @@
             "content": "A complete framework to implement a music system using discord.js v14"
           }
         ],
-        "title": "Dismusic"
+        "title": "<img src=\"./dismusic_banner.png\" alt=\"Dismusic Banner\" style=\"width: 30vh; display: block; margin-left: auto; margin-right: auto;\">"
       },
       "tutorials": "./docs_config/tutorials"
     }
