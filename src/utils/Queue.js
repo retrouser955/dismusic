@@ -64,12 +64,8 @@ class QueueBuilder extends EventEmiter {
             this.isPaused = true
             const status = newState.status
             if(status === 'idle' && this.tracks.length !== 0) {
-                const track = this.tracks.splice(0, 1)
-                if(loopMode === 'queue') {
-                    this.tracks.push(track);
-                    this.audioRes.volume.setVolume(this.volume)
-                }
                 if(loopMode === 'song') {
+                    const latestTrack = this.tracks[0]
                     if(track.source === "YouTube" || track.source === "SoundCloud") {
                         const stream = await play.stream(latestTrack.url)
                         audioRes = createAudioResource(stream.stream, {
@@ -89,8 +85,13 @@ class QueueBuilder extends EventEmiter {
                     this.emit('EmitTrackStart', track)
                     this.timestamp = Date.now()
                     this.isPaused = false
-                    this.audioRes.volume.setVolume(this.volume)
+                    this.audioRes.volume.setVolume(this.volume / 100)
                     return
+                }
+                const track = this.tracks.splice(0, 1)
+                if(loopMode === 'queue') {
+                    this.tracks.push(track);
+                    this.audioRes.volume.setVolume(this.volume / 100)
                 }
                 if(this.tracks.length === 0) return this.emit('emitQueueEnded')
                 const latestTrack = this.tracks[0]
@@ -111,7 +112,7 @@ class QueueBuilder extends EventEmiter {
                 }
                 this.audioRes = audioRes
                 player.play(audioRes)
-                this.audioRes.volume.setVolume(this.volume)
+                this.audioRes.volume.setVolume(this.volume / 100)
                 this.emit('EmitTrackStart', latestTrack)
                 this.timestamp = Date.now()
             } else if(this.tracks.length === 0 && status !== "playing") {
