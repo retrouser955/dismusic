@@ -116,6 +116,7 @@ class Player extends EventEmiter {
             const queue = await this.getQueue(guild)
             this.emit('trackStart', queue, track)
         })
+
         queueFunctions.on('emitQueueEnded', async () => {
             const queue = await this.getQueue(guild)
             const connection = getVoiceConnection(guild.id) || undefined
@@ -147,6 +148,8 @@ class Player extends EventEmiter {
             }
             delete this.queues[guild.id]
             delete this.queues.players[guild.id]
+            queueFunctions.removeAllListeners()
+            queueFunctions = undefined
         }
         return this.queues[guild.id]
     }

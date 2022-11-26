@@ -2,5 +2,6 @@ module.exports = {
     Player: require('./src/main'),
     version: require('./package.json').version,
     QueueRepeatMode: require("./RepeatMode.js"),
-    RadioClient: require('./src/radio.js')
+    RadioClient: require('./src/radio.js'),
+    SpotifySearcher: require("./src/utils/SpotifySearcher")
 }
