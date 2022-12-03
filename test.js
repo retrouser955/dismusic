@@ -4,6 +4,7 @@ const client = new Client({
     intents: [Intents.Guilds, Intents.GuildVoiceStates, Intents.MessageContent, Intents.GuildMessages]
 })
 const player = new Player(client)
+
 client.on('messageCreate', async (message) => {
     if(!message.content.startsWith('!')) return
     const raw = message.content.replace('!', '')
@@ -23,7 +24,12 @@ client.on('messageCreate', async (message) => {
                 }
             })
             await queue.connectTo(message.member.voice.channel)
-            queue.play(res[0])
+            const injectedRes = player.injectCustomData({
+                target: res[0],
+                key: "requestedby",
+                value: message.author
+            })
+            queue.play(injectedRes)
             message.reply('<a:host_loading:1022886955266080789> Adding track(s) ' + res[0].name)
         }
     }
