@@ -1,45 +1,42 @@
-const googleIt = require('google-it')
 const play = require('play-dl')
 const fetch = require('isomorphic-unfetch')
 const { getData, getTracks } = require('spotify-url-info')(fetch)
 const getMinute = require('./time.js')
 async function SoundCloudSearch(query) {
-    const client = await play.getFreeClientID()
+    const soundcloudClientID = await play.getFreeClientID()
+
     await play.setToken({
         soundcloud: {
-            client_id: client
+            client_id: soundcloudClientID
         }
     })
-    const googleItResults = await googleIt({
-        query: `${query} soundcloud`,
-        "no-display": true
-    })
-    const results = googleItResults.filter(function (result) {
-        if(String(result.link).includes('https://soundcloud.com/') && !String(result.link).includes('?')) {
-            const newLink = String(result.link).replace('https://', '')
-            const array = newLink.split('/')
-            return array.length === 3
+
+    const soundCloudSearch = await play.search(query, {
+        source: {
+            soundcloud: "tracks"
         }
     })
-    if(results.length === 0) return []
-    const playData = await play.soundcloud(results[0].link)
-    const time = await getMinute(playData.durationInSec)
-    return [{
-        name: playData.name,
-        description: null,
-        rawData: playData,
-        duration: {
-            formatted: time,
-            raw: playData.durationInMs
-        },
-        url: playData.permalink,
-        author: {
-            name: playData.user.name,
-            thumbnail: playData.user.thumbnail
-        },
-        thumbnail: playData.thumbnail ?? 'https://www.pngitem.com/pimgs/m/522-5228247_soundcloud-logo-hd-png-download.png',
-        source: "SoundCloud"
-    }]
+
+    const returnMap = soundCloudSearch.map(async (track) => {
+        const time = await getMinute(track.durationInSec)
+        return {
+            name: track.name,
+            description: null,
+            rawData: track,
+            duration: {
+                formatted: time,
+                raw: track.durationInSec
+            },
+            url: track.permalink,
+            thumbnail: track.thumbnail,
+            author: {
+                name: track.user.full_name,
+                thumbnail: track.user.thumbnail
+            }
+        }
+    })
+    const promise = await Promise.all(returnMap)
+    return promise
 }
 
 async function Spotify(url) {

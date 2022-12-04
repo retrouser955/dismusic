@@ -111,11 +111,12 @@ class Player extends EventEmiter {
      * @returns {QueueBuilder} The queue you just created
      */
     async createQueue(guild, options) {
-        const queueFunctions = new QueueBuilder(guild, options)
+        let queueFunctions = new QueueBuilder(guild, options)
         queueFunctions.on('EmitTrackStart', async (track) => {
             const queue = await this.getQueue(guild)
             this.emit('trackStart', queue, track)
         })
+
         queueFunctions.on('emitQueueEnded', async () => {
             const queue = await this.getQueue(guild)
             const connection = getVoiceConnection(guild.id) || undefined
@@ -147,8 +148,21 @@ class Player extends EventEmiter {
             }
             delete this.queues[guild.id]
             delete this.queues.players[guild.id]
+            queueFunctions.removeAllListeners()
+            queueFunctions = undefined
         }
         return this.queues[guild.id]
+    }
+
+    /**
+     * Inject custom data to your tracks
+     * @param {*} param0 { target: "the target you want to inject", key: "the key that will be injected into the target", value: "the value that will be injected into the target" }
+     * @returns injected target
+     */
+    injectCustomData({ target, key, value }) {
+        if(!target || !key || !value) throw new Error("[ Dismusic Error ] Target, key or value cannot be undefined")
+        target[key] = value
+        return target
     }
 }
 
