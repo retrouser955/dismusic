@@ -105,7 +105,7 @@ class Player extends EventEmiter {
         return queue ? true : false
     }
     /**
-     * 
+     * Create a new queue
      * @param {object} guild the guild you want to create a queue for
      * @param {object} options The options for creating a queue
      * @returns {QueueBuilder} The queue you just created
@@ -156,8 +156,8 @@ class Player extends EventEmiter {
 
     /**
      * Inject custom data to your tracks
-     * @param {*} param0 { target: "the target you want to inject", key: "the key that will be injected into the target", value: "the value that will be injected into the target" }
-     * @returns injected target
+     * @param {object} param target: "the target you want to inject", key: "the key that will be injected into the target", value: "the value that will be injected into the target"
+     * @returns {any} injected target
      */
     injectCustomData({ target, key, value }) {
         if(!target || !key || !value) throw new Error("[ Dismusic Error ] Target, key or value cannot be undefined")
