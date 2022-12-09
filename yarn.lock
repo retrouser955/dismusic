@@ -1835,7 +1835,7 @@ spotify-uri@~3.0.3:
   resolved "https://registry.npmjs.org/spotify-uri/-/spotify-uri-3.0.3.tgz#d09ae7e013f12fe2c22eed06cda2463be220597b"
   integrity sha512-mMstJ4dAMki6GbUjg94kp/h9ZH+7T7+ro/KUC00WVh+WKoLgMRrTKLkWMIwCZNO53Xa8DRHQw/6jwYtRZrVI3g==
 
-spotify-url-info@^3.1.8:
+spotify-url-info@^3.1.9:
   version "3.1.9"
   resolved "https://registry.npmjs.org/spotify-url-info/-/spotify-url-info-3.1.9.tgz#031c4ac4498ae66e4194b3a322bd667c23839772"
   integrity sha512-1iMvLEpXve8/QB8JnkbBTOOGi7UpCiQ5QJeTt+koJiMfIZIyrN+afRtRr0UOTKJp/KlAUYTJPGYDeNbqKDjIJw==
