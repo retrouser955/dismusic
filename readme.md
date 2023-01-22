@@ -68,3 +68,8 @@ client.login('')
 There are docs for the package [here](https://retrouser955.github.io/dismusic/)
 
 If you encountered any problems or have a question, feel free to join our [discord server](https://discord.gg/uWfMZYju8c)
+
+# Example bot(s)
+
+These bot(s) were created by awesome people in order to help **you** with making your own  
+- [Dismusic Test Bot](https://github.com/BonoJansen/Dismusic-Test-Bot) by BonoJansen
