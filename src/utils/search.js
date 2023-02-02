@@ -50,7 +50,7 @@ async function Spotify(url) {
             formatted: time,
             raw: Math.floor(spotifyData.duration / 1000)
         },
-        url: spotifyData.external_urls.spotify,
+        url: spotifyData.external_urls?.spotify ?? url,
         thumbnail: spotifyData.coverArt.sources[0].url ?? "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Spotify_App_Logo.svg/2048px-Spotify_App_Logo.svg.png",
         author: {
             name: spotifyData.artists[0].name,
