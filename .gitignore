@@ -1,11 +1,2 @@
-node_modules
-
-# auth token
-auth.js
-
-# Spotify Data Files
-.data/
-
-# information files
-
-info.js
+node_modules/
+.yarn/
