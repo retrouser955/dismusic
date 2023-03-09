@@ -133,6 +133,16 @@ class QueueBuilder extends EventEmiter {
             adapterCreator: this.guild.voiceAdapterCreator
         })
         this.connection = connection
+
+        const networkStateChangeHandler = (_oldNetworkState, newNetworkState) => {
+            const newUdp = Reflect.get(newNetworkState, 'udp');
+            clearInterval(newUdp?.keepAliveInterval);
+        }
+        connection.on('stateChange', (oldState, newState) => {
+            Reflect.get(oldState, 'networking')?.off('stateChange', networkStateChangeHandler);
+            Reflect.get(newState, 'networking')?.on('stateChange', networkStateChangeHandler);
+        })
+
         return connection
     }
     /**

@@ -126,6 +126,10 @@ class Player extends EventEmiter {
                 // no?
             }
             this.emit('queueEnded', queue)
+
+            queueFunctions.off("emitQueueEnded")
+            queueFunctions.off("EmitTrackStart")
+
             delete this.queues.players[guild.id]
             delete this.queues[guild.id]
         })
@@ -146,9 +150,9 @@ class Player extends EventEmiter {
             } else if(connection) {
                 connection.destroy()
             }
+
             delete this.queues[guild.id]
             delete this.queues.players[guild.id]
-            queueFunctions.removeAllListeners()
             queueFunctions = undefined
         }
         return this.queues[guild.id]

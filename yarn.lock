@@ -84,16 +84,16 @@
   resolved "https://registry.npmjs.org/@discordjs/util/-/util-0.1.0.tgz#e42ca1bf407bc6d9adf252877d1b206e32ba369a"
   integrity sha512-e7d+PaTLVQav6rOc2tojh2y6FE8S7REkqLldq1XF4soCx74XB/DIjbVbVLtBemf0nLW77ntz0v+o5DytKwFNLQ==
 
-"@discordjs/voice@^0.11.0":
-  version "0.11.0"
-  resolved "https://registry.npmjs.org/@discordjs/voice/-/voice-0.11.0.tgz#941f723a969b55cd37f07588d9683914d369be1b"
-  integrity sha512-6+9cj1dxzBJm7WJ9qyG2XZZQ8rcLl6x2caW0C0OxuTtMLAaEDntpb6lqMTFiBg/rDc4Rd59g1w0gJmib33CuHw==
+"@discordjs/voice@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.npmjs.org/@discordjs/voice/-/voice-0.14.0.tgz#8e5be1a76bb6c1e6e75236237f00241c763b2833"
+  integrity sha512-/LV8LSFuJ1c4OEW1ubPg3al2QNpUpwX8ZL+KL+LORmnUFVCtehSaEh+38uDfWg1O/TgiGI5vOLj4ZKql43drcw==
   dependencies:
     "@types/ws" "^8.5.3"
-    discord-api-types "^0.36.2"
+    discord-api-types "^0.37.20"
     prism-media "^1.3.4"
-    tslib "^2.4.0"
-    ws "^8.8.1"
+    tslib "^2.4.1"
+    ws "^8.11.0"
 
 "@sapphire/async-queue@^1.5.0":
   version "1.5.0"
@@ -573,15 +573,15 @@ delayed-stream@~1.0.0:
   resolved "https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
   integrity sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==
 
-discord-api-types@^0.36.2:
-  version "0.36.3"
-  resolved "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.36.3.tgz#a931b7e57473a5c971d6937fa5f392eb30047579"
-  integrity sha512-bz/NDyG0KBo/tY14vSkrwQ/n3HKPf87a0WFW/1M9+tXYK+vp5Z5EksawfCWo2zkAc6o7CClc0eff1Pjrqznlwg==
-
 discord-api-types@^0.37.12:
   version "0.37.15"
   resolved "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.37.15.tgz#2b158b75091cd573dfd7d8c79b25dde3241d65e6"
   integrity sha512-2SpscsamTtctJflnz1J6cPp99PLs10DNGi2rrOdjID3KhP1nwsoJHPvcLe6zwcYxZnRdA/71M85RCNOQl83u1A==
+
+discord-api-types@^0.37.20:
+  version "0.37.35"
+  resolved "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.37.35.tgz#d0dad0bce7ce5bffc633030f17464e45148d9f28"
+  integrity sha512-iyKZ/82k7FX3lcmHiAvvWu5TmyfVo78RtghBV/YsehK6CID83k5SI03DKKopBcln+TiEIYw5MGgq7SJXSpNzMg==
 
 discord.js@^14.0.3:
   version "14.6.0"
@@ -1835,10 +1835,10 @@ spotify-uri@~3.0.3:
   resolved "https://registry.npmjs.org/spotify-uri/-/spotify-uri-3.0.3.tgz#d09ae7e013f12fe2c22eed06cda2463be220597b"
   integrity sha512-mMstJ4dAMki6GbUjg94kp/h9ZH+7T7+ro/KUC00WVh+WKoLgMRrTKLkWMIwCZNO53Xa8DRHQw/6jwYtRZrVI3g==
 
-spotify-url-info@^3.1.9:
-  version "3.1.9"
-  resolved "https://registry.npmjs.org/spotify-url-info/-/spotify-url-info-3.1.9.tgz#031c4ac4498ae66e4194b3a322bd667c23839772"
-  integrity sha512-1iMvLEpXve8/QB8JnkbBTOOGi7UpCiQ5QJeTt+koJiMfIZIyrN+afRtRr0UOTKJp/KlAUYTJPGYDeNbqKDjIJw==
+spotify-url-info@^3.2.3:
+  version "3.2.3"
+  resolved "https://registry.npmjs.org/spotify-url-info/-/spotify-url-info-3.2.3.tgz#915b8e07d5d12a4527df7e4be5f01023d19f2bc3"
+  integrity sha512-h7LCEM86kE68uWWAW0+NbKP+33qPC00SsbdJXzvmzNc18aIA/NukTi8gKZKEwHBENusLX0VRsHfIhyKDg7Fong==
   dependencies:
     himalaya "~1.1.0"
     spotify-uri "~3.0.3"
@@ -2054,6 +2054,11 @@ tslib@^2.4.0:
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
   integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
 
+tslib@^2.4.1:
+  version "2.5.0"
+  resolved "https://registry.npmjs.org/tslib/-/tslib-2.5.0.tgz#42bfed86f5787aeb41d031866c8f402429e0fddf"
+  integrity sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==
+
 tsubaki@^1.3.2:
   version "1.3.14"
   resolved "https://registry.npmjs.org/tsubaki/-/tsubaki-1.3.14.tgz#a53537c63b6a439261a5ece8fc442b0ef9a6b2ee"
@@ -2250,7 +2255,12 @@ write@1.0.3:
   dependencies:
     mkdirp "^0.5.1"
 
-ws@^8.8.1, ws@^8.9.0:
+ws@^8.11.0:
+  version "8.12.1"
+  resolved "https://registry.npmjs.org/ws/-/ws-8.12.1.tgz#c51e583d79140b5e42e39be48c934131942d4a8f"
+  integrity sha512-1qo+M9Ba+xNhPB+YTWUlK6M17brTut5EXbcBaMRN5pH5dFrXz7lzz1ChFSUq3bOUl8yEvSenhHmYUNJxFzdJew==
+
+ws@^8.9.0:
   version "8.10.0"
   resolved "https://registry.npmjs.org/ws/-/ws-8.10.0.tgz#00a28c09dfb76eae4eb45c3b565f771d6951aa51"
   integrity sha512-+s49uSmZpvtAsd2h37vIPy1RBusaLawVe8of+GyEPsaJTCMpj/2v8NpeK1SHXjBlQ95lQTmQofOJnFiLoaN3yw==
