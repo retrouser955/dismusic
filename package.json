@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@discordjs/voice": "^0.14.0",
+    "@types/node": "^18.14.6",
     "clean-jsdoc-theme": "^4.1.8",
     "discord.js": "^14.7.1",
     "ffmpeg-static": "^5.0.2",
@@ -38,5 +39,6 @@
     "spotify",
     "soundcloud",
     "framework"
-  ]
+  ],
+  "typings": "./types.d.ts"
 }
