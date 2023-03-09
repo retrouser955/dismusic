@@ -1,78 +1,107 @@
-import PlayDLExtractor from "./Extractors/Playdl"
-import Track from "./Track"
-import { QueueConstructorOptions } from "../types/Queue"
-import { Guild } from "discord.js";
-import Player from "./Player";
-import { AudioPlayer, AudioPlayerState, createAudioPlayer, createAudioResource, NoSubscriberBehavior, StreamType } from "@discordjs/voice";
-import { Readable } from "stream";
+import PlayDLExtractor from './Extractors/Playdl';
+import Track from './Track';
+import { QueueConstructorOptions } from '../types/Queue';
+import { Guild, VoiceChannel } from 'discord.js';
+import Player from './Player';
+import {
+  AudioPlayer,
+  AudioPlayerState,
+  createAudioPlayer,
+  createAudioResource,
+  joinVoiceChannel,
+  NoSubscriberBehavior,
+  StreamType,
+  VoiceConnection,
+} from '@discordjs/voice';
+import { Readable } from 'stream';
 
 interface StreamReturnData {
-    stream: Readable|string,
-    type: StreamType
+  stream: Readable | string;
+  type: StreamType;
 }
 
 class Queue {
+  guild: Guild;
+  extractor: any;
+  playerInstance: Player;
+  tracks: Track[];
+  player: AudioPlayer;
+  metadata: any;
+  private isFirstPlay: boolean = true;
+  connection: VoiceConnection | undefined;
 
-    guild: Guild
-    extractor: any
-    playerInstance: Player
-    tracks: Array<Track>
-    player: AudioPlayer
-    metadata: any
+  constructor(guild: Guild, options: QueueConstructorOptions) {
+    this.guild = guild;
+    this.extractor = options.extractor ?? new PlayDLExtractor();
+    this.tracks = [];
+    this.playerInstance = options.playerInstance;
+    this.player = createAudioPlayer({
+      behaviors: {
+        noSubscriber: NoSubscriberBehavior.Play,
+      },
+    });
+  }
 
-    constructor(guild: Guild, options: QueueConstructorOptions) {
-        this.guild = guild
-        this.extractor = options.extractor ?? new PlayDLExtractor()
-        this.tracks = []
-        this.playerInstance = options.playerInstance
-        this.player = createAudioPlayer({
-            behaviors: {
-                noSubscriber: NoSubscriberBehavior.Play
-            }
-        })
+  addTrack(track: Track): void {
+    this.tracks.push(track);
+  }
+
+  connect(voiceChannel: VoiceChannel): VoiceConnection {
+    const connection = joinVoiceChannel({
+      guildId: voiceChannel.guildId,
+      channelId: voiceChannel.id,
+      adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+    });
+
+    this.connection = connection;
+
+    return connection;
+  }
+
+  async play(track: Track | undefined): Promise<void> {
+    const isTrackUsable = track instanceof Track;
+
+    if (this.isFirstPlay) {
+      this.initializePlayer();
+      this.isFirstPlay = false;
     }
 
-    addTrack(track: Track): void {
-        this.tracks.push(track)
+    if (isTrackUsable) {
+      const { stream, type } = await this.stream(track);
+
+      const resource = createAudioResource(stream, {
+        inputType: type,
+      });
+
+      this.tracks.unshift(track);
+
+      this.player.play(resource);
     }
+  }
 
-    async play(track: Track | undefined): Promise<void> {
-        const isTrackUsable = track instanceof Track
+  private async stream(track: Track): Promise<StreamReturnData> {
+    const stream = await this.extractor?.stream(track, track.source);
 
-        if (isTrackUsable) {
-            const { stream, type } = await this.stream(track)
+    return stream;
+  }
 
-            const resource = createAudioResource(stream, {
-                inputType: type
-            })
+  private async initializePlayer(): Promise<void> {
+    this.player.on('stateChange', this.playerStateChangeHandler);
+  }
 
-            this.tracks.unshift(track)
+  private playerStateChangeHandler(_oldState: AudioPlayerState, newState: AudioPlayerState): void {
+    const status: string = newState.status;
 
-            this.player.play(resource)
-        }
+    if (status === 'idle') {
+      if (this.tracks.length <= 0) {
+        this.playerInstance.emit('queueEnd', this);
+
+        const playerInstance = this.playerInstance;
+
+        playerInstance.queues.delete(this.guild.id);
+      }
     }
-
-    private async stream(track: Track): Promise<StreamReturnData> {
-        const stream = await this.extractor?.stream(track, track.source)
-
-        return stream
-    }
-
-    private async initializePlayer(): Promise<void> {
-        this.player.on("stateChange", (_oldState: AudioPlayerState, newState: AudioPlayerState) => {
-            const status: string = newState.status
-
-            if(status === "idle") {
-                if(this.tracks.length <= 0) {
-                    this.playerInstance.emit("queueEnd", this)
-
-                    const playerInstance = this.playerInstance
-
-                    playerInstance.queues.delete(this.guild.id)
-                }
-            }
-        })
-    }
+  }
 }
 
-export default Queue
+export default Queue;
