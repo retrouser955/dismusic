@@ -7,7 +7,7 @@
     "test": "echo hello",
     "docs": "jsdoc -c docs_config/jsdoc.json",
     "json:docs": "docgen src --source ./src --custom docs_config/docs.yml --output docs_config/docs.json --spaces 2",
-    "build": "tsc",
+    "build": "npm run lint && npm run format && tsc",
     "format": "prettier --write \"lib/**/*.ts\" \"dist/**/*.js\"",
     "lint": "tslint -p tsconfig.json"
   },
