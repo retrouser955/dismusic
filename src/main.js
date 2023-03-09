@@ -127,7 +127,15 @@ class Player extends EventEmiter {
             }
             this.emit('queueEnded', queue)
 
-            queueFunctions.removeAllListeners()
+            try {
+                queueFunctions.removeAllListeners()
+            } catch {
+                try {
+                    this.queues[guild.id].removeAllListeners()
+                } catch (error) {
+                    // no?
+                }
+            }
 
             delete this.queues.players[guild.id]
             delete this.queues[guild.id]
