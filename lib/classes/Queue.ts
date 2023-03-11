@@ -1,6 +1,5 @@
 import PlayDLExtractor from './Extractors/Playdl';
 import Track from './Track';
-import { QueueConstructorOptions } from '../types/Queue';
 import { Guild, VoiceChannel } from 'discord.js';
 import Player from './Player';
 import {
@@ -12,12 +11,19 @@ import {
   NoSubscriberBehavior,
   StreamType,
   VoiceConnection,
+  AudioPlayerStatus,
 } from '@discordjs/voice';
 import { Readable } from 'stream';
 
 interface StreamReturnData {
   stream: Readable | string;
   type: StreamType;
+}
+
+interface QueueConstructorOptions {
+  extractor?: object;
+  metadata?: any;
+  playerInstance: Player;
 }
 
 class Queue {
@@ -101,6 +107,25 @@ class Queue {
         playerInstance.queues.delete(this.guild.id);
       }
     }
+  }
+
+  kill(): void {
+    this.removeAllListeners();
+
+    if (this.player.state.status !== AudioPlayerStatus.Idle) {
+      try {
+        this.player.stop(true);
+      } catch {
+        process.emitWarning('AudioPlayer Warning', {
+          code: 'Stopping audio player',
+          detail: 'Could not forcefully stop the audio player',
+        });
+      }
+    }
+  }
+
+  private removeAllListeners() {
+    this.player.off('stateChange', this.playerStateChangeHandler);
   }
 }
 

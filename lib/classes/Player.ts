@@ -16,12 +16,12 @@ interface CreateQueueOptions {
 
 export default class Player extends EventEmitter<PlayerEvents> {
   client: Client;
-  queues: QueueManager;
+  queues = new QueueManager();
 
   constructor(client: Client) {
     super();
+
     this.client = client;
-    this.queues = new QueueManager();
   }
 
   createQueue(guild: Guild, options: CreateQueueOptions = {}): Queue {
@@ -39,5 +39,15 @@ export default class Player extends EventEmitter<PlayerEvents> {
     const queue = this.queues.get(guildId);
 
     return queue;
+  }
+
+  deleteQueue(guildId: string | Snowflake): void {
+    if (this.queues.has(guildId)) {
+      const queue = this.getQueue(guildId) as Queue;
+
+      queue.kill();
+
+      this.queues.delete(guildId);
+    }
   }
 }

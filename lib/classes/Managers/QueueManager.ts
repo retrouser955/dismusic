@@ -18,4 +18,8 @@ export default class QueueManager {
   delete(key: string): void {
     if (this.queues[key] instanceof Queue) delete this.queues[key];
   }
+
+  has(key: string) {
+    return this.queues[key] === undefined || this.queues[key] === null;
+  }
 }
