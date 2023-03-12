@@ -1,4 +1,4 @@
-import PlayDLExtractor from './Extractors/Playdl';
+import PlayDLExtractor from '../Extractors/Playdl';
 import Track from './Track';
 import { Guild, VoiceChannel } from 'discord.js';
 import Player from './Player';

@@ -1,7 +1,7 @@
 import { StreamType } from '@discordjs/voice';
 import * as play from 'play-dl';
 import { Readable } from 'stream';
-import Track from '../Track';
+import Track from '../Core/Track';
 
 interface SpotifyOptions {
   client_id: string;
@@ -51,37 +51,6 @@ export default class PlayDLExtractor {
     ];
 
     return handleableSources;
-  }
-
-  async search(query: string, source: string | undefined): Promise<SearchReturn> {
-    if (!source) {
-      const searchRes = await play.search(query, { source: { youtube: 'video' } });
-
-      const tracks = searchRes.map((track) => {
-        return new Track({
-          name: track.title ?? '',
-          description: track.description ?? '',
-          raw: track,
-          duration: track.durationRaw,
-          author: {
-            name: track?.channel?.name ?? '',
-            thumbnail: track?.channel?.iconURL() ?? '',
-          },
-          source: 'YouTube',
-          url: track.url,
-        });
-      });
-
-      return {
-        playlist: undefined,
-        tracks,
-      };
-    } else {
-      return {
-        playlist: undefined,
-        tracks: [],
-      };
-    }
   }
 
   async extract(track: Track, source: string): Promise<{ stream: Readable; type: StreamType }> {

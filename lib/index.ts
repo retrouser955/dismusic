@@ -1,3 +1,5 @@
-export * from './classes/Player';
-export * from './classes/Track';
-export * from './classes/Extractors/Playdl';
+import Player from './classes/Core/Player';
+import Track from './classes/Core/Track';
+import PlayDLExtractor from './classes/Extractors/Playdl';
+
+export { Player, Track, PlayDLExtractor };

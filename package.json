@@ -4,7 +4,7 @@
   "description": "An easy music package for discord.js version 14",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo hello",
+    "test": "npm run build && node __tests__/test.js",
     "docs": "jsdoc -c docs_config/jsdoc.json",
     "json:docs": "docgen src --source ./src --custom docs_config/docs.yml --output docs_config/docs.json --spaces 2",
     "build": "npm run lint && npm run format && tsc",

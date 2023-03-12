@@ -7,7 +7,7 @@ interface TrackOptions {
     name: string;
     thumbnail: string;
   };
-  source: string;
+  source: 'YouTube' | 'SoundCloud' | 'Spotify' | 'Custom';
   url: string;
 }
 
@@ -20,8 +20,9 @@ class Track {
     name: string;
     thumbnail: string;
   };
-  source: string;
+  source: 'YouTube' | 'SoundCloud' | 'Spotify' | 'Custom';
   url: string;
+  metadata: any;
 
   constructor(options: TrackOptions) {
     (this.name = options.name), (this.description = options.description);
@@ -32,7 +33,6 @@ class Track {
   }
 
   injectMetadata(data: any) {
-    // @ts-expect-error
     this.metadata = data;
   }
 }

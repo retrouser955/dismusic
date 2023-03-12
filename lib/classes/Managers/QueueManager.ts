@@ -1,4 +1,4 @@
-import Queue from '../Queue';
+import Queue from '../Core/Queue';
 
 export default class QueueManager {
   queues: { [key: string]: Queue };
