@@ -15,12 +15,12 @@ import {
 } from '@discordjs/voice';
 import { Readable } from 'stream';
 
-interface StreamReturnData {
+export interface StreamReturnData {
   stream: Readable | string;
   type: StreamType;
 }
 
-interface QueueConstructorOptions {
+export interface QueueConstructorOptions {
   extractor?: object;
   metadata?: any;
   playerInstance: Player;

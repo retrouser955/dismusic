@@ -1,4 +1,4 @@
-interface TrackOptions {
+export interface TrackOptions {
   name: string;
   description: string;
   raw: any;

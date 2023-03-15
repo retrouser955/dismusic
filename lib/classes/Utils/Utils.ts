@@ -1,4 +1,4 @@
-interface ProgressBarOptions {
+export interface ProgressBarOptions {
   type: 'full' | 'compact';
   line?: string;
   indicator?: string;

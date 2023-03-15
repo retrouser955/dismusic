@@ -3,7 +3,7 @@ import Playlist from '../Core/Playlist';
 import Track from '../Core/Track';
 import { timeConverter } from '../Utils/Utils';
 
-interface SpotifyAPIResponse {
+export interface SpotifyAPIResponse {
   clientId: string;
   accessToken: string;
   accessTokenExpirationTimestampMs: number;

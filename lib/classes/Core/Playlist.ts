@@ -1,6 +1,6 @@
 import Track from './Track';
 
-interface PlaylistOptions {
+export interface PlaylistOptions {
   name: string;
   duration: string;
   tracks: Track[];

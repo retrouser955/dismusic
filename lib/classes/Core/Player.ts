@@ -7,17 +7,17 @@ import YouTubeSearchEngine from '../SearchEngines/YouTube';
 import SoundCloudSearchEngine from '../SearchEngines/SoundCloud';
 import { setMain } from '../Managers/PlayerManager';
 
-interface PlayerEvents {
+export interface PlayerEvents {
   trackStart: (track: Track, queue: Queue) => void;
   queueEnd: (queue: Queue) => void;
 }
 
-interface CreateQueueOptions {
+export interface CreateQueueOptions {
   extractor?: any;
   metadata?: any;
 }
 
-interface SearchOptions {
+export interface SearchOptions {
   source: 'Youtube' | 'SoundCloud';
   limit?: number;
 }
