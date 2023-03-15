@@ -9,6 +9,7 @@ interface TrackOptions {
   };
   source: 'YouTube' | 'SoundCloud' | 'Spotify' | 'Custom';
   url: string;
+  thumbnail: string;
 }
 
 class Track {

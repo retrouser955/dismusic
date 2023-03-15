@@ -32,6 +32,7 @@ export default class YouTubeSearchEngine {
           thumbnail: track.channel?.iconURL() as string,
         },
         source: 'YouTube',
+        thumbnail: track.thumbnails[0].url,
       });
     });
 

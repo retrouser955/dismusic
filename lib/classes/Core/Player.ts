@@ -5,6 +5,7 @@ import Queue from './Queue';
 import Track from './Track';
 import YouTubeSearchEngine from '../SearchEngines/YouTube';
 import SoundCloudSearchEngine from '../SearchEngines/SoundCloud';
+import { setMain } from '../Managers/PlayerManager';
 
 interface PlayerEvents {
   trackStart: (track: Track, queue: Queue) => void;
@@ -31,6 +32,8 @@ export default class Player extends EventEmitter<PlayerEvents> {
     super();
 
     this.client = client;
+
+    setMain(this);
   }
 
   createQueue(guild: Guild, options: CreateQueueOptions = {}): Queue {
@@ -41,11 +44,15 @@ export default class Player extends EventEmitter<PlayerEvents> {
 
     this.queues.set(guild.id, queue);
 
+    setMain(this);
+
     return queue;
   }
 
   getQueue(guildId: string | Snowflake): Queue | undefined {
     const queue = this.queues.get(guildId);
+
+    setMain(this);
 
     return queue;
   }
@@ -55,6 +62,8 @@ export default class Player extends EventEmitter<PlayerEvents> {
       const queue = this.getQueue(guildId) as Queue;
 
       queue.kill();
+
+      setMain(this);
 
       this.queues.delete(guildId);
     }
