@@ -1,6 +1,6 @@
 {
   "name": "dismusic",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "description": "An easy music package for discord.js version 14",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "retro_ig",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/voice": "^0.14.0",
+    "@discordjs/voice": "^0.15.0",
     "clean-jsdoc-theme": "^4.1.8",
     "discord.js": "^14.0.3",
     "ffmpeg-static": "^5.0.2",
