@@ -1,15 +1,39 @@
 import * as play from 'play-dl';
-import Playlist from '../Core/Playlist';
-import Track from '../Core/Track';
+import Playlist from '../Structures/Playlist';
+import Track from '../Structures/Track';
 import { timeConverter } from '../Utils/Utils';
 
 export default class SoundCloudSearchEngine {
+  public isReady: boolean;
+
   constructor(clientId?: string) {
-    if (clientId) play.setToken({ soundcloud: { client_id: clientId } });
-    else play.getFreeClientID().then((id) => play.setToken({ soundcloud: { client_id: id } }));
+    this.isReady = false;
+
+    (async () => {
+      if (clientId) {
+        await play.setToken({
+          soundcloud: {
+            client_id: clientId,
+          },
+        });
+
+        this.isReady = true;
+      } else {
+        const id = await play.getFreeClientID();
+        await play.setToken({
+          soundcloud: {
+            client_id: id,
+          },
+        });
+
+        this.isReady = true;
+      }
+    })();
   }
 
-  async search(query: string, limit?: number) {
+  async search(query: string, limit?: number): Promise<{ playlist: undefined | null | Playlist; tracks: Track[] }> {
+    if (!this.isReady) throw new Error('Error: Soundcloud search engine is not ready yet');
+
     const res = await play.search(query, {
       limit,
       source: {
@@ -28,7 +52,7 @@ export default class SoundCloudSearchEngine {
           thumbnail: track.user.thumbnail,
         },
         source: 'SoundCloud',
-        url: track.url,
+        url: track.permalink,
         thumbnail: track.thumbnail,
       });
     });
@@ -36,7 +60,9 @@ export default class SoundCloudSearchEngine {
     return { playlist: null, tracks };
   }
 
-  async urlHandler(query: string) {
+  async urlHandler(query: string): Promise<{ playlist: null | undefined | Playlist; tracks: Track[] }> {
+    if (!this.isReady) throw new Error('Error: Soundcloud engine is not ready yet!');
+
     const soundcloudMetadata = await play.soundcloud(query);
 
     if (soundcloudMetadata.type === 'track') {
@@ -55,7 +81,7 @@ export default class SoundCloudSearchEngine {
               thumbnail: soundCloudTrack.user.thumbnail,
             },
             source: 'SoundCloud',
-            url: soundCloudTrack.url,
+            url: soundCloudTrack.permalink,
             thumbnail: soundCloudTrack.thumbnail,
           }),
         ],

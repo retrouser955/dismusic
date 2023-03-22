@@ -1,6 +1,6 @@
 import { default as axios } from 'axios';
-import Playlist from '../Core/Playlist';
-import Track from '../Core/Track';
+import Playlist from '../Structures/Playlist';
+import Track from '../Structures/Track';
 import { timeConverter } from '../Utils/Utils';
 
 export interface SpotifyAPIResponse {
@@ -18,10 +18,11 @@ export default class SpotifyEngine {
   };
 
   private spotifyAPIURL: string = 'https://api.spotify.com/v1';
+  private spotifyTokenURL: string = 'https://open.spotify.com/get_access_token?reason=transport&productType=web_player';
 
   constructor() {
     (async () => {
-      const data = await axios.get('https://open.spotify.com/get_access_token?reason=transport&productType=web_player');
+      const data = await axios.get(this.spotifyTokenURL);
       const spotifyAPIResponse = data.data as SpotifyAPIResponse;
 
       this.spotifyInfo.clientId = spotifyAPIResponse.clientId;
@@ -46,7 +47,7 @@ export default class SpotifyEngine {
     const idArray = link.split('/');
     const id = idArray[idArray.length - 1];
 
-    return `${this.spotifyAPIURL}/playlists/${id}`;
+    return `${this.spotifyAPIURL}/${query.includes('album') ? 'albums' : 'playlists'}/${id}`;
   }
 
   private async getSpotifyPlaylist(query: string) {
@@ -58,7 +59,7 @@ export default class SpotifyEngine {
 
     const playlist = new Playlist({
       name: axiosPlaylistData?.name as string,
-      duration: '0:00',
+      duration: '',
       author: {
         name: axiosPlaylistData?.owner?.display_name as string,
         thumbnail: '',
@@ -66,8 +67,12 @@ export default class SpotifyEngine {
       tracks: [],
     });
 
+    let durationMS = 0;
+
     const spotifyTracks = axiosPlaylistData.tracks.items.map((t: any) => {
-      const track: any = t.track;
+      const track: any = t.track || t;
+
+      durationMS += parseInt(track.duration_ms, 10) as number;
 
       return new Track({
         name: track.name as string,
@@ -84,16 +89,62 @@ export default class SpotifyEngine {
       });
     });
 
+    playlist.duration = timeConverter(Math.round(durationMS / 1000));
     playlist.tracks = spotifyTracks;
 
     return { playlist, tracks: spotifyTracks };
   }
 
-  async urlHandler(query: string) {
+  private spotifyTrackAPIURLMaker(track: string) {
+    const arr = track.split('?')[0];
+    const arr2 = arr.split('/');
+
+    return `${this.spotifyAPIURL}/tracks/${arr2[arr2.length - 1]}`;
+  }
+
+  private async spotifyTrackInfoExtractor(apiUrl: string) {
     await this.refreshSpotifyToken();
 
-    const returnData = await this.getSpotifyPlaylist(query);
+    const spotifyTrackData = (
+      await axios.get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${this.spotifyInfo.token}`,
+        },
+      })
+    ).data as any;
 
-    return returnData;
+    const track = new Track({
+      name: spotifyTrackData?.name as string,
+      description: '',
+      raw: spotifyTrackData,
+      duration: timeConverter(Math.floor(parseInt(spotifyTrackData?.duration_ms, 10) / 1000)),
+      author: {
+        name: spotifyTrackData?.artists[0].name as string,
+        thumbnail: '',
+      },
+      source: 'Spotify',
+      url: spotifyTrackData?.external_urls?.spotify as string,
+      thumbnail: spotifyTrackData?.album?.images[0]?.url,
+    });
+
+    return track;
+  }
+
+  async urlHandler(query: string): Promise<{ playlist: Playlist | undefined; tracks: Track[] }> {
+    const SPOTIFY_PLAYLIST_REGEX = /(^(https:)\/\/(open.spotify.com)\/(playlist|album)\/)/;
+
+    await this.refreshSpotifyToken();
+
+    if (SPOTIFY_PLAYLIST_REGEX.test(query)) {
+      const returnData = await this.getSpotifyPlaylist(query);
+
+      return returnData;
+    }
+
+    const apiTrack = this.spotifyTrackAPIURLMaker(query);
+
+    const trackData = await this.spotifyTrackInfoExtractor(apiTrack);
+
+    return { playlist: undefined, tracks: [trackData] };
   }
 }

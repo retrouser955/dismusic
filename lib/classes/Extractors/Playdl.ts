@@ -1,7 +1,7 @@
 import { StreamType } from '@discordjs/voice';
 import * as play from 'play-dl';
 import { Readable } from 'stream';
-import Track from '../Core/Track';
+import Track from '../Structures/Track';
 
 interface SpotifyOptions {
   client_id: string;

@@ -1,5 +1,5 @@
 import PlayDLExtractor from '../Extractors/Playdl';
-import Track from './Track';
+import Track from '../Structures/Track';
 import { Guild, VoiceChannel } from 'discord.js';
 import Player from './Player';
 import {
@@ -14,6 +14,7 @@ import {
   AudioPlayerStatus,
 } from '@discordjs/voice';
 import { Readable } from 'stream';
+import TrackManager from '../Managers/TrackManager';
 
 export interface StreamReturnData {
   stream: Readable | string;
@@ -30,7 +31,7 @@ class Queue {
   guild: Guild;
   extractor: any;
   playerInstance: Player;
-  tracks: Track[];
+  tracks: TrackManager = new TrackManager(this);
   player: AudioPlayer;
   metadata: any;
   private isFirstPlay: boolean = true;
@@ -39,7 +40,6 @@ class Queue {
   constructor(guild: Guild, options: QueueConstructorOptions) {
     this.guild = guild;
     this.extractor = options.extractor ?? new PlayDLExtractor();
-    this.tracks = [];
     this.playerInstance = options.playerInstance;
     this.player = createAudioPlayer({
       behaviors: {
@@ -49,7 +49,7 @@ class Queue {
   }
 
   addTrack(track: Track): void {
-    this.tracks.push(track);
+    this.tracks.set(track);
   }
 
   connect(voiceChannel: VoiceChannel): VoiceConnection {
@@ -79,7 +79,7 @@ class Queue {
         inputType: type,
       });
 
-      this.tracks.unshift(track);
+      this.tracks.addFirst(track);
 
       this.player.play(resource);
     }

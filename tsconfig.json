@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ESNext",
     "module": "commonjs",
     "declaration": true,
     "outDir": "./dist",
@@ -8,5 +8,9 @@
     "skipLibCheck": true
   },
   "include": ["lib/"],
-  "exclude": ["node_modules/", "**/__tests__/*"]
+  "exclude": ["node_modules/", "**/__tests__/*"],
+  "typeDocOptions": {
+    "entryPoints": ["lib/index.ts"],
+    "out": "docs"
+  }
 }
