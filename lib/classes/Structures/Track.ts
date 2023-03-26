@@ -7,7 +7,7 @@ export interface TrackOptions {
     name: string;
     thumbnail: string;
   };
-  source: 'YouTube' | 'SoundCloud' | 'Spotify' | 'Custom';
+  source: 'YouTube' | 'SoundCloud' | 'Spotify' | 'Custom' | 'Deezer';
   url: string;
   thumbnail: string;
 }
@@ -21,7 +21,7 @@ class Track {
     name: string;
     thumbnail: string;
   };
-  source: 'YouTube' | 'SoundCloud' | 'Spotify' | 'Custom';
+  source: 'YouTube' | 'SoundCloud' | 'Spotify' | 'Custom' | 'Deezer';
   url: string;
   metadata: any;
 

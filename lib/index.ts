@@ -22,5 +22,5 @@ export {
   SpotifyEngine,
   createProgressBar,
   timeConverter,
-  BaseEngine
+  BaseEngine,
 };

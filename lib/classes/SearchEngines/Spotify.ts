@@ -35,8 +35,11 @@ export default class SpotifyEngine extends BaseEngine {
     })();
   }
 
-  async testSource(_query: string, source: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist') {
-    return source === "SpotifyPlaylist" || source === "Spotify"
+  async testSource(
+    _query: string,
+    source: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist' | 'Deezer',
+  ) {
+    return source === 'SpotifyPlaylist' || source === 'Spotify';
   }
 
   private async refreshSpotifyToken(): Promise<void> {

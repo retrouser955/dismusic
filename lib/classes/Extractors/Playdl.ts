@@ -29,8 +29,8 @@ export default class PlayDLExtractor {
     this.searchEngine = data.searchEngine;
   }
 
-  async useFilters(_filters: string[]|string, _seekTo: number) {
-    throw new Error("Error: As Play-dl extractor trades filter support for performance, filters are unable to be used")
+  async useFilters(_filters: string[] | string, _seekTo: number) {
+    throw new Error('Error: As Play-dl extractor trades filter support for performance, filters are unable to be used');
   }
 
   async extract(track: Track, source: string): Promise<{ stream: Readable; type: StreamType }> {

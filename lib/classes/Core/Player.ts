@@ -8,6 +8,8 @@ import SoundCloudSearchEngine from '../SearchEngines/SoundCloud';
 import { setMain } from '../Managers/PlayerManager';
 import SpotifyEngine from '../SearchEngines/Spotify';
 import * as Util from '../Utils/Utils';
+import DeezerEngine from '../SearchEngines/Deezer';
+import BaseEngine from '../SearchEngines/BaseEngine';
 
 export interface PlayerEvents {
   trackStart: (track: Track, queue: Queue) => void;
@@ -22,7 +24,7 @@ export interface CreateQueueOptions {
 export interface SearchOptions {
   source?: 'Youtube' | 'SoundCloud';
   limit?: number;
-  customEngine: any[];
+  customEngine: BaseEngine[];
 }
 
 export default class Player extends EventEmitter<PlayerEvents> {
@@ -31,6 +33,7 @@ export default class Player extends EventEmitter<PlayerEvents> {
   public youtubeEngine = new YouTubeSearchEngine(this);
   public soundCloudEngine = new SoundCloudSearchEngine(this);
   public spotifyEngine = new SpotifyEngine(this);
+  public deezerEngine = new DeezerEngine(this);
 
   constructor(client: Client) {
     super();
@@ -84,32 +87,44 @@ export default class Player extends EventEmitter<PlayerEvents> {
   async search(query: string, options?: SearchOptions) {
     const resolved = Util.sourceResolver(query);
 
-    if(options?.customEngine) {
-      let searchEngine: any;
+    if (options?.customEngine) {
+      let searchEngine: BaseEngine | undefined;
 
-      for(let engine of options.customEngine) {
-        const isAbleToHandle = await engine?.testSource(query, resolved)
+      for (const engine of options.customEngine) {
+        const isAbleToHandle = await engine?.testSource(query, resolved);
 
-        if(!isAbleToHandle) continue;
+        if (!isAbleToHandle) continue;
 
-        searchEngine = engine
+        searchEngine = engine;
         break;
       }
 
-      if(resolved === "Search") return await searchEngine?.search(query, options.limit)
+      if (!searchEngine) return await this.defaultSearch(query, resolved, options?.source, options?.limit);
 
-      return await searchEngine.urlHandler(query)
+      if (resolved === 'Search') return await searchEngine.search(query, options.limit);
+
+      return await searchEngine?.urlHandler(query);
     } else {
-      if (resolved === 'Youtube') return await this.youtubeEngine.urlHandler(query);
-      if (resolved === 'Spotify' || resolved === 'SpotifyPlaylist') return await this.spotifyEngine.urlHandler(query);
-      if (resolved === 'Soundcloud') return await this.soundCloudEngine.urlHandler(query);
-  
-      if (resolved === 'Search') {
-        const source: 'Youtube' | 'SoundCloud' = options?.source ?? 'Youtube';
-  
-        if (source === 'Youtube') return await this.youtubeEngine.search(query, options?.limit);
-        if (source === 'SoundCloud') return await this.soundCloudEngine.search(query, options?.limit);
-      }
+      return await this.defaultSearch(query, resolved, options?.source, options?.limit);
+    }
+  }
+
+  private async defaultSearch(
+    query: string,
+    resolved: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist' | 'Deezer',
+    source: SearchOptions['source'],
+    limit?: number,
+  ) {
+    if (resolved === 'Youtube') return await this.youtubeEngine.urlHandler(query);
+    if (resolved === 'Spotify' || resolved === 'SpotifyPlaylist') return await this.spotifyEngine.urlHandler(query);
+    if (resolved === 'Soundcloud') return await this.soundCloudEngine.urlHandler(query);
+    if (resolved === 'Deezer') return await this.deezerEngine.urlHandler(query);
+
+    if (resolved === 'Search') {
+      const searchSource: 'Youtube' | 'SoundCloud' = source ?? 'Youtube';
+
+      if (searchSource === 'Youtube') return await this.youtubeEngine.search(query, limit);
+      if (searchSource === 'SoundCloud') return await this.soundCloudEngine.search(query, limit);
     }
   }
 }

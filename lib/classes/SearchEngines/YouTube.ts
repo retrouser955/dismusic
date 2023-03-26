@@ -18,8 +18,11 @@ export default class YouTubeSearchEngine extends BaseEngine {
     }
   }
 
-  async testSource(_query: string, source: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist') {
-    return source === "Youtube" || source === "Search"
+  async testSource(
+    _query: string,
+    source: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist' | 'Deezer',
+  ) {
+    return source === 'Youtube' || source === 'Search';
   }
 
   async search(query: string, limit?: number): Promise<{ playlist: undefined | null | Playlist; tracks: Track[] }> {
@@ -50,29 +53,29 @@ export default class YouTubeSearchEngine extends BaseEngine {
   }
 
   async youtubePlaylistHandler(query: string) {
-    const youtubePlaylistData = await play.playlist_info(query)
+    const youtubePlaylistData = await play.playlist_info(query);
 
-    const allVideos = await youtubePlaylistData.all_videos()
+    const allVideos = await youtubePlaylistData.all_videos();
 
-    let duration = 0
+    let duration = 0;
 
     const tracks = allVideos.map((val) => {
-      duration += val.durationInSec
+      duration += val.durationInSec;
 
       return new Track({
         name: val.title as string,
         url: val.url,
         duration: val.durationRaw,
-        source: "YouTube",
+        source: 'YouTube',
         raw: val,
         author: {
           name: val.channel?.name as string,
-          thumbnail: val.channel?.iconURL() as string
+          thumbnail: val.channel?.iconURL() as string,
         },
         description: val.description as string,
-        thumbnail: val.thumbnails[0].url
-      })
-    })
+        thumbnail: val.thumbnails[0].url,
+      });
+    });
 
     const playlist = new Playlist({
       name: youtubePlaylistData.title as string,
@@ -80,11 +83,11 @@ export default class YouTubeSearchEngine extends BaseEngine {
       tracks,
       author: {
         name: youtubePlaylistData.channel?.name as string,
-        thumbnail: youtubePlaylistData.channel?.iconURL() as string
-      }
-    })
+        thumbnail: youtubePlaylistData.channel?.iconURL() as string,
+      },
+    });
 
-    return { playlist, tracks }
+    return { playlist, tracks };
   }
 
   async urlHandler(query: string): Promise<{ playlist: undefined | Playlist; tracks: Track[] }> {

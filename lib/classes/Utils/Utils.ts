@@ -11,6 +11,9 @@ export const REGEX = {
   youtube:
     /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/,
   spotifyPlaylist: /(^(https:)\/\/(open.spotify.com)\/(playlist)\/)/,
+  deezer: /(^https:)\/\/(www\.)?deezer.com\/([a-zA-Z]+\/)?track\/[0-9]+/,
+  deezerPlaylist: /(^https:)\/\/(www\.)?deezer.com\/[a-zA-Z]+\/(playlist|album)\/[0-9]+(\?)?(.*)/,
+  deezerShare: /(^https:)\/\/deezer\.page\.link\/[A-Za-z0-9]+/,
 };
 
 export function timeConverter(seconds: number): string {
@@ -50,10 +53,13 @@ export function createProgressBar(current: string, duration: string, options: Pr
     : `${indicator}${line.repeat(length - 1)}`;
 }
 
-export function sourceResolver(query: string): 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist' {
+export function sourceResolver(
+  query: string,
+): 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist' | 'Deezer' {
   if (REGEX.youtube.test(query)) return 'Youtube';
   if (REGEX.spotify.test(query)) return 'Spotify';
   if (REGEX.spotifyPlaylist.test(query)) return 'SpotifyPlaylist';
   if (REGEX.soundCloud.test(query)) return 'Soundcloud';
+  if (REGEX.deezer.test(query) || REGEX.deezerPlaylist.test(query) || REGEX.deezerShare.test(query)) return 'Deezer';
   return 'Search';
 }

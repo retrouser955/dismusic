@@ -35,8 +35,11 @@ export default class SoundCloudSearchEngine extends BaseEngine {
     })();
   }
 
-  async testSource(_query: string, source: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist') {
-    return source === "Soundcloud" || source === "Search"
+  async testSource(
+    _query: string,
+    source: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist' | 'Deezer',
+  ) {
+    return source === 'Soundcloud' || source === 'Search';
   }
 
   async search(query: string, limit?: number): Promise<{ playlist: undefined | null | Playlist; tracks: Track[] }> {
