@@ -28,9 +28,9 @@ export interface SearchOptions {
 export default class Player extends EventEmitter<PlayerEvents> {
   client: Client;
   queues = new QueueManager();
-  public youtubeEngine = new YouTubeSearchEngine();
-  public soundCloudEngine = new SoundCloudSearchEngine();
-  public spotifyEngine = new SpotifyEngine();
+  public youtubeEngine = new YouTubeSearchEngine(this);
+  public soundCloudEngine = new SoundCloudSearchEngine(this);
+  public spotifyEngine = new SpotifyEngine(this);
 
   constructor(client: Client) {
     super();

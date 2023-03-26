@@ -1,12 +1,16 @@
 import * as play from 'play-dl';
+import Player from '../Core/Player';
 import Playlist from '../Structures/Playlist';
 import Track from '../Structures/Track';
 import { timeConverter } from '../Utils/Utils';
+import BaseEngine from './BaseEngine';
 
-export default class SoundCloudSearchEngine {
+export default class SoundCloudSearchEngine extends BaseEngine {
   public isReady: boolean;
 
-  constructor(clientId?: string) {
+  constructor(_player: Player, clientId?: string) {
+    super();
+
     this.isReady = false;
 
     (async () => {

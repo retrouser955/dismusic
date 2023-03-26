@@ -1,7 +1,9 @@
 import { default as axios } from 'axios';
+import Player from '../Core/Player';
 import Playlist from '../Structures/Playlist';
 import Track from '../Structures/Track';
 import { timeConverter } from '../Utils/Utils';
+import BaseEngine from './BaseEngine';
 
 export interface SpotifyAPIResponse {
   clientId: string;
@@ -10,7 +12,7 @@ export interface SpotifyAPIResponse {
   isAnonymous: boolean;
 }
 
-export default class SpotifyEngine {
+export default class SpotifyEngine extends BaseEngine {
   private spotifyInfo = {
     clientId: '',
     token: '',
@@ -20,7 +22,9 @@ export default class SpotifyEngine {
   private spotifyAPIURL: string = 'https://api.spotify.com/v1';
   private spotifyTokenURL: string = 'https://open.spotify.com/get_access_token?reason=transport&productType=web_player';
 
-  constructor() {
+  constructor(_player: Player) {
+    super();
+
     (async () => {
       const data = await axios.get(this.spotifyTokenURL);
       const spotifyAPIResponse = data.data as SpotifyAPIResponse;

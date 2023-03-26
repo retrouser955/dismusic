@@ -1,10 +1,14 @@
 import * as play from 'play-dl';
+import Player from '../Core/Player';
 import Playlist from '../Structures/Playlist';
 import Track from '../Structures/Track';
 import { timeConverter } from '../Utils/Utils';
+import BaseEngine from './BaseEngine';
 
-export default class YouTubeSearchEngine {
-  constructor(youtubeCookie?: string) {
+export default class YouTubeSearchEngine extends BaseEngine {
+  constructor(_player: Player, youtubeCookie?: string) {
+    super();
+
     if (youtubeCookie) {
       play.setToken({
         youtube: {

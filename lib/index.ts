@@ -6,6 +6,7 @@ import { StreamReturnData, QueueConstructorOptions } from './classes/Core/Queue'
 import { getMain as getMainPlayer } from './classes/Managers/PlayerManager';
 import SpotifyEngine from './classes/SearchEngines/Spotify';
 import { createProgressBar, timeConverter } from './classes/Utils/Utils';
+import BaseEngine from './classes/SearchEngines/BaseEngine';
 
 export {
   Player,
@@ -21,4 +22,5 @@ export {
   SpotifyEngine,
   createProgressBar,
   timeConverter,
+  BaseEngine
 };
