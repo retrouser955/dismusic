@@ -31,6 +31,10 @@ export default class SoundCloudSearchEngine {
     })();
   }
 
+  async testSource(_query: string, source: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist') {
+    return source === "Soundcloud" || source === "Search"
+  }
+
   async search(query: string, limit?: number): Promise<{ playlist: undefined | null | Playlist; tracks: Track[] }> {
     if (!this.isReady) throw new Error('Error: Soundcloud search engine is not ready yet');
 

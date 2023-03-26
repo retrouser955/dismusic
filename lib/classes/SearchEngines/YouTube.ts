@@ -14,6 +14,10 @@ export default class YouTubeSearchEngine {
     }
   }
 
+  async testSource(_query: string, source: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist') {
+    return source === "Youtube" || source === "Search"
+  }
+
   async search(query: string, limit?: number): Promise<{ playlist: undefined | null | Playlist; tracks: Track[] }> {
     const res = await play.search(query, {
       source: {

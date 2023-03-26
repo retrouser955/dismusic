@@ -5,6 +5,8 @@ const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
 })
 
+const player = new Player(client)
+
 client.on("messageCreate", async ( message ) => {
     if(! message.content.startsWith('!') ) return 
         
@@ -28,7 +30,6 @@ client.on("messageCreate", async ( message ) => {
     }
 })
 
-const player = new Player(client)
 
 player.on("trackStart", async (track, queue) => {
     const channel = queue.metadata.channel

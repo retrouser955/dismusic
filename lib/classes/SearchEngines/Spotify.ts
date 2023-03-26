@@ -31,6 +31,10 @@ export default class SpotifyEngine {
     })();
   }
 
+  async testSource(_query: string, source: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist') {
+    return source === "SpotifyPlaylist" || source === "Spotify"
+  }
+
   private async refreshSpotifyToken(): Promise<void> {
     if (Date.now() <= this.spotifyInfo.expireDate) return;
 

@@ -29,32 +29,12 @@ export default class PlayDLExtractor {
     this.searchEngine = data.searchEngine;
   }
 
-  getHandleableSources() {
-    const handleableSources = [
-      {
-        source: 'YouTube',
-        regex:
-          /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/,
-      },
-      {
-        source: 'SoundCloud',
-        regex: /(^(https:)\/\/(soundcloud.com)\/)/,
-      },
-      {
-        source: 'Spotify',
-        regex: /(^(https:)\/\/(open.spotify.com)\/(track)\/)/,
-      },
-      {
-        source: 'SpotifyPlaylist',
-        regex: /(^(https:)\/\/(open.spotify.com)\/(playlist)\/)/,
-      },
-    ];
-
-    return handleableSources;
+  async useFilters(_filters: string[]|string, _seekTo: number) {
+    throw new Error("Error: As Play-dl extractor trades filter support for performance, filters are unable to be used")
   }
 
   async extract(track: Track, source: string): Promise<{ stream: Readable; type: StreamType }> {
-    if (['YouTube', 'SoundCloud'].includes(source)) {
+    if (['YouTube', 'Soundcloud'].includes(source)) {
       const str = await play.stream(track.url);
 
       return {
