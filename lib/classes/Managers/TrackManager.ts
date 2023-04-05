@@ -27,6 +27,10 @@ export default class TrackManager {
     this.tracks.splice(position, 0, track);
   }
 
+  addMultiple(track: Array<Track>) {
+    this.tracks = [...this.tracks, ...track]
+  }
+
   delete(position?: number): Track {
     if (!position) {
       const deleteTrack = this.tracks.splice(0, 1)[0];

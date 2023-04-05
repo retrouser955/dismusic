@@ -12,7 +12,7 @@ import DeezerEngine from '../SearchEngines/Deezer';
 import BaseEngine from '../SearchEngines/BaseEngine';
 
 export interface PlayerEvents {
-  trackStart: (track: Track, queue: Queue) => void;
+  trackStart: (track: Track, queue: Queue, lastTrack: Track) => void;
   queueEnd: (queue: Queue) => void;
 }
 

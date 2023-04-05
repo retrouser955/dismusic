@@ -12,6 +12,7 @@ import {
   StreamType,
   VoiceConnection,
   AudioPlayerStatus,
+  AudioResource,
 } from '@discordjs/voice';
 import { Readable } from 'stream';
 import TrackManager from '../Managers/TrackManager';
@@ -36,6 +37,9 @@ class Queue {
   metadata: any;
   private isFirstPlay: boolean = true;
   connection: VoiceConnection | undefined;
+  private timestamp = 0
+  isPaused = true
+  private resource!: AudioResource
 
   constructor(guild: Guild, options: QueueConstructorOptions) {
     this.guild = guild;
@@ -48,7 +52,9 @@ class Queue {
     });
   }
 
-  addTrack(track: Track): void {
+  addTrack(track: Track|Array<Track>): void {
+    if(Array.isArray(track)) return this.tracks.addMultiple(track)
+
     this.tracks.set(track);
   }
 
@@ -64,7 +70,7 @@ class Queue {
     return connection;
   }
 
-  async play(track: Track | undefined): Promise<void> {
+  async play(track?: Track): Promise<void> {
     const isTrackUsable = track instanceof Track;
 
     if (this.isFirstPlay) {
@@ -82,7 +88,41 @@ class Queue {
       this.tracks.addFirst(track);
 
       this.player.play(resource);
+
+      this.resource = resource
+
+      return
     }
+
+    if(this.tracks.length === 0) throw new Error("Dismusic Queue Error: Unable to play something without nothing in the queue")
+
+    if(this.isPaused) {
+      let isPlayerUnPaused = this.player.unpause()
+      if(!isPlayerUnPaused) process.emitWarning("Unable to resume the audio player")
+      this.isPaused = isPlayerUnPaused
+
+      return
+    }
+
+    const currentTrack = this.tracks.get(0) as Track
+
+    const str = await this.stream(currentTrack)
+    const stream = str.stream as Readable
+    const type = str.type
+    
+    const resource = createAudioResource(stream, {
+      inputType: type
+    })
+
+    this.player.play(resource)
+
+    this.resource = resource
+  }
+
+  pause() {
+    if(this.isPaused) return
+
+    this.player.pause()
   }
 
   private async stream(track: Track): Promise<StreamReturnData> {
@@ -105,16 +145,28 @@ class Queue {
         const playerInstance = this.playerInstance;
 
         playerInstance.queues.delete(this.guild.id);
+      } else {
+        const removedTrack = this.tracks.delete()
+
+        const first = this.tracks.get(0) as Track
+
+        this.stream(first).then((stream) => {
+          this.resource = createAudioResource(stream.stream, {
+            inputType: stream.type
+          })
+  
+          this.playerInstance.emit("trackStart", first, this, removedTrack)
+        }).catch((err) => { throw new Error(`Error: Unknown Error\n${err}`) })
       }
     }
   }
 
-  kill(): void {
+  kill(force?: boolean): void {
     this.removeAllListeners();
 
     if (this.player.state.status !== AudioPlayerStatus.Idle) {
       try {
-        this.player.stop(true);
+        this.player.stop(force);
       } catch {
         process.emitWarning('AudioPlayer Warning', {
           code: 'Stopping audio player',
@@ -122,6 +174,8 @@ class Queue {
         });
       }
     }
+
+    this.playerInstance.queues.delete(this.guild.id)
   }
 
   private removeAllListeners() {

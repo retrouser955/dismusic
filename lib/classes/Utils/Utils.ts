@@ -1,3 +1,8 @@
+import * as prism from "prism-media";
+import * as play from "play-dl"
+import Track from "../Structures/Track";
+import ytdl = require("ytdl-core");
+
 export interface ProgressBarOptions {
   type: 'full' | 'compact';
   line?: string;
@@ -15,6 +20,29 @@ export const REGEX = {
   deezerPlaylist: /(^https:)\/\/(www\.)?deezer.com\/[a-zA-Z]+\/(playlist|album)\/[0-9]+(\?)?(.*)/,
   deezerShare: /(^https:)\/\/deezer\.page\.link\/[A-Za-z0-9]+/,
 };
+
+export async function createFFmpegTranscoder(seek?: number, audioFilters?: Array<string>) {
+  const args = [
+    '-analyzeduration', '0',
+    '-loglevel', '0',
+    '-f', 'mp3',
+    '-ar', '48000',
+    '-ac', '2',
+  ]
+
+  if(seek)
+    args.unshift("-ss", seek.toString())
+
+  if(Array.isArray(audioFilters))
+    args.unshift('-af', audioFilters.join(","))
+
+  const transcoder = new prism.FFmpeg({
+    shell: false,
+    args
+  })
+
+  return transcoder
+}
 
 export function timeConverter(seconds: number): string {
   if (seconds < 60) return `0:${String(seconds).length === 2 ? `${seconds}` : `0${seconds}`}`;
@@ -62,4 +90,16 @@ export function sourceResolver(
   if (REGEX.soundCloud.test(query)) return 'Soundcloud';
   if (REGEX.deezer.test(query) || REGEX.deezerPlaylist.test(query) || REGEX.deezerShare.test(query)) return 'Deezer';
   return 'Search';
+}
+
+export async function spotifyBridge(track: Track, isYtdl: boolean) {
+  const bridgeSearch = await play.search(`${track.name} by ${track.author.name} audio`, {
+    source: {
+      youtube: "video"
+    }
+  })
+
+  if(isYtdl) return ytdl(bridgeSearch[0].url, { filter: "audioonly" })
+
+  return await play.stream(bridgeSearch[0].url)
 }

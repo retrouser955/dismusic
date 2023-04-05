@@ -2,6 +2,7 @@ import { StreamType } from '@discordjs/voice';
 import * as play from 'play-dl';
 import { Readable } from 'stream';
 import Track from '../Structures/Track';
+import { spotifyBridge } from '../Utils/Utils';
 
 interface SpotifyOptions {
   client_id: string;
@@ -12,11 +13,6 @@ interface SpotifyOptions {
 interface Options {
   spotify?: SpotifyOptions;
   searchEngine?: string;
-}
-
-interface SearchReturn {
-  playlist?: object;
-  tracks: Track[];
 }
 
 export default class PlayDLExtractor {
@@ -43,18 +39,11 @@ export default class PlayDLExtractor {
       };
     }
 
-    const search = await play.search(`${track.name} by ${track.author.name} official audio`, {
-      source: {
-        youtube: 'video',
-      },
-      limit: 1,
-    });
-
-    const ytstream = await play.stream(search[0].url);
+    const stream = await spotifyBridge(track, false) as play.YouTubeStream
 
     return {
-      type: ytstream.type,
-      stream: ytstream.stream,
+      type: stream.type,
+      stream: stream.stream,
     };
   }
 }
