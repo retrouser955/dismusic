@@ -23,7 +23,7 @@ export default class SpotifyEngine extends BaseEngine {
   private spotifyTokenURL: string = 'https://open.spotify.com/get_access_token?reason=transport&productType=web_player';
 
   constructor(_player: Player) {
-    super();
+    super(_player);
 
     (async () => {
       const data = await axios.get(this.spotifyTokenURL);

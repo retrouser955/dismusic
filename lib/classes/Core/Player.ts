@@ -10,6 +10,7 @@ import SpotifyEngine from '../SearchEngines/Spotify';
 import * as Util from '../Utils/Utils';
 import DeezerEngine from '../SearchEngines/Deezer';
 import BaseEngine from '../SearchEngines/BaseEngine';
+import { Source } from '../types/typedef';
 
 export interface PlayerEvents {
   trackStart: (track: Track, queue: Queue, lastTrack: Track) => void;
@@ -19,6 +20,10 @@ export interface PlayerEvents {
 export interface CreateQueueOptions {
   extractor?: any;
   metadata?: any;
+}
+
+export interface PlayerOptions {
+  debug?: boolean
 }
 
 export interface SearchOptions {
@@ -34,11 +39,14 @@ export default class Player extends EventEmitter<PlayerEvents> {
   public soundCloudEngine = new SoundCloudSearchEngine(this);
   public spotifyEngine = new SpotifyEngine(this);
   public deezerEngine = new DeezerEngine(this);
+  public debugMode?: boolean = false
 
-  constructor(client: Client) {
+  constructor(client: Client, options?: PlayerOptions) {
     super();
 
     this.client = client;
+
+    if(options?.debug) this.debugMode = options.debug
 
     setMain(this);
   }
@@ -103,7 +111,7 @@ export default class Player extends EventEmitter<PlayerEvents> {
 
       if (resolved === 'Search') return await searchEngine.search(query, options.limit);
 
-      return await searchEngine?.urlHandler(query);
+      return await searchEngine?.urlHandler(query, resolved);
     } else {
       return await this.defaultSearch(query, resolved, options?.source, options?.limit);
     }
@@ -111,11 +119,11 @@ export default class Player extends EventEmitter<PlayerEvents> {
 
   private async defaultSearch(
     query: string,
-    resolved: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist' | 'Deezer',
+    resolved: Source['ResolveSources'],
     source: SearchOptions['source'],
     limit?: number,
   ) {
-    if (resolved === 'Youtube') return await this.youtubeEngine.urlHandler(query);
+    if (resolved === 'Youtube') return await this.youtubeEngine.urlHandler(query, resolved);
     if (resolved === 'Spotify' || resolved === 'SpotifyPlaylist') return await this.spotifyEngine.urlHandler(query);
     if (resolved === 'Soundcloud') return await this.soundCloudEngine.urlHandler(query);
     if (resolved === 'Deezer') return await this.deezerEngine.urlHandler(query);

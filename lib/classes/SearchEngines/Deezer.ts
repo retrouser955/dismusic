@@ -4,15 +4,16 @@ import Track from '../Structures/Track';
 import BaseEngine from './BaseEngine';
 import { getData } from '@mithron/deezer-music-metadata';
 import * as Utils from '../Utils/Utils';
+import { Source } from '../types/typedef';
 
 export default class DeezerEngine extends BaseEngine {
   constructor(_player: Player) {
-    super();
+    super(_player);
   }
 
   async testSource(
     _query: string,
-    source: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist' | 'Deezer',
+    source: Source["ResolveSources"],
   ): Promise<boolean> {
     return source === 'Deezer';
   }

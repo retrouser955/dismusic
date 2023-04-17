@@ -4,12 +4,13 @@ import Playlist from '../Structures/Playlist';
 import Track from '../Structures/Track';
 import { timeConverter } from '../Utils/Utils';
 import BaseEngine from './BaseEngine';
+import { Source } from '../types/typedef';
 
 export default class SoundCloudSearchEngine extends BaseEngine {
   public isReady: boolean;
 
   constructor(_player: Player, clientId?: string) {
-    super();
+    super(_player);
 
     this.isReady = false;
 
@@ -37,7 +38,7 @@ export default class SoundCloudSearchEngine extends BaseEngine {
 
   async testSource(
     _query: string,
-    source: 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist' | 'Deezer',
+    source: Source['ResolveSources'],
   ) {
     return source === 'Soundcloud' || source === 'Search';
   }

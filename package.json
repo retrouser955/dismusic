@@ -18,6 +18,7 @@
     "@discordjs/voice": "^0.14.0",
     "@mithron/deezer-music-metadata": "^1.0.3",
     "axios": "^1.3.4",
+    "chalk": "^5.2.0",
     "discord.js": "^14.7.1",
     "libsodium-wrappers": "^0.7.10",
     "lyrics-finder": "^21.7.0",

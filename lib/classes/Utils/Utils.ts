@@ -2,6 +2,7 @@ import * as prism from "prism-media";
 import * as play from "play-dl"
 import Track from "../Structures/Track";
 import ytdl = require("ytdl-core");
+import { Source } from "../types/typedef"
 
 export interface ProgressBarOptions {
   type: 'full' | 'compact';
@@ -19,6 +20,7 @@ export const REGEX = {
   deezer: /(^https:)\/\/(www\.)?deezer.com\/([a-zA-Z]+\/)?track\/[0-9]+/,
   deezerPlaylist: /(^https:)\/\/(www\.)?deezer.com\/[a-zA-Z]+\/(playlist|album)\/[0-9]+(\?)?(.*)/,
   deezerShare: /(^https:)\/\/deezer\.page\.link\/[A-Za-z0-9]+/,
+  youtubePlaylist: /^.*(youtu.be\/|list=)([^#\&\?]*).*/
 };
 
 export async function createFFmpegTranscoder(seek?: number, audioFilters?: Array<string>) {
@@ -83,7 +85,7 @@ export function createProgressBar(current: string, duration: string, options: Pr
 
 export function sourceResolver(
   query: string,
-): 'Youtube' | 'Spotify' | 'Soundcloud' | 'Search' | 'SpotifyPlaylist' | 'Deezer' {
+): Source['ResolveSources'] {
   if (REGEX.youtube.test(query)) return 'Youtube';
   if (REGEX.spotify.test(query)) return 'Spotify';
   if (REGEX.spotifyPlaylist.test(query)) return 'SpotifyPlaylist';
