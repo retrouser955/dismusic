@@ -1,3 +1,5 @@
+import type { Source } from "../types/typedef";
+
 export interface TrackOptions {
   name: string;
   description: string;
@@ -7,7 +9,7 @@ export interface TrackOptions {
     name: string;
     thumbnail: string;
   };
-  source: 'YouTube' | 'SoundCloud' | 'Spotify' | 'Custom' | 'Deezer';
+  source: Source["ValidSources"];
   url: string;
   thumbnail: string;
 }
@@ -21,7 +23,7 @@ class Track {
     name: string;
     thumbnail: string;
   };
-  source: 'YouTube' | 'SoundCloud' | 'Spotify' | 'Custom' | 'Deezer';
+  source: Source["ValidSources"];
   url: string;
   metadata: any;
 

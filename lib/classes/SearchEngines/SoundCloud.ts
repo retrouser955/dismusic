@@ -63,7 +63,7 @@ export default class SoundCloudSearchEngine extends BaseEngine {
           name: track.user.full_name,
           thumbnail: track.user.thumbnail,
         },
-        source: 'SoundCloud',
+        source: "Soundcloud",
         url: track.permalink,
         thumbnail: track.thumbnail,
       });
@@ -92,7 +92,7 @@ export default class SoundCloudSearchEngine extends BaseEngine {
               name: soundCloudTrack.user.full_name,
               thumbnail: soundCloudTrack.user.thumbnail,
             },
-            source: 'SoundCloud',
+            source: "Soundcloud",
             url: soundCloudTrack.permalink,
             thumbnail: soundCloudTrack.thumbnail,
           }),
@@ -114,7 +114,7 @@ export default class SoundCloudSearchEngine extends BaseEngine {
           name: track.user.full_name,
           thumbnail: track.user.thumbnail,
         },
-        source: 'SoundCloud',
+        source: "Soundcloud",
         url: track.url,
         thumbnail: track.thumbnail,
       });

@@ -16,6 +16,9 @@ import {
 } from '@discordjs/voice';
 import { Readable } from 'stream';
 import TrackManager from '../Managers/TrackManager';
+import { timeConverter } from '../Utils/Utils';
+import { createProgressBar } from '../Utils/Utils';
+import { ProgressBarOptions } from '../Utils/Utils';
 
 export interface StreamReturnData {
   stream: Readable | string;
@@ -39,6 +42,7 @@ class Queue {
   connection: VoiceConnection | undefined;
   private timestamp = 0
   isPaused = true
+  private pausedDuration = 0
   private resource!: AudioResource
 
   constructor(guild: Guild, options: QueueConstructorOptions) {
@@ -89,6 +93,8 @@ class Queue {
 
       this.player.play(resource);
 
+      this.timestamp = new Date().getTime()
+
       this.resource = resource
 
       return
@@ -115,12 +121,17 @@ class Queue {
     })
 
     this.player.play(resource)
+    this.timestamp = new Date().getTime()
 
     this.resource = resource
   }
 
   pause() {
     if(this.isPaused) return
+
+    this.pausedDuration = Date.now()
+
+    this.isPaused = true
 
     this.player.pause()
   }
@@ -154,6 +165,10 @@ class Queue {
           this.resource = createAudioResource(stream.stream, {
             inputType: stream.type
           })
+
+          this.player.play(this.resource)
+
+          this.timestamp = new Date().getTime()
   
           this.playerInstance.emit("trackStart", first, this, removedTrack)
         }).catch((err) => { throw new Error(`Error: Unknown Error\n${err}`) })
@@ -178,8 +193,25 @@ class Queue {
     this.playerInstance.queues.delete(this.guild.id)
   }
 
+  resume() {
+    if(!this.isPaused) return
+
+    this.player.unpause()
+
+    this.timestamp += Date.now() - this.pausedDuration
+    this.pausedDuration = 0
+  }
+
   private removeAllListeners() {
     this.player.off('stateChange', this.playerStateChangeHandler);
+  }
+
+  getCurrentTime() {
+    return timeConverter(Math.round(this.timestamp / 1000))
+  }
+
+  createProgressBar(barOptions: ProgressBarOptions) {
+    return createProgressBar(this.getCurrentTime(), this.tracks.get(0)?.duration as string, barOptions)
   }
 }
 
