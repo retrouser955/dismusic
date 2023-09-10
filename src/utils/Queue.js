@@ -2,7 +2,7 @@ const voice = require('./voice.js')
 const { getVoiceConnection, createAudioResource, joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior, AudioPlayer, VoiceConnection } = require('@discordjs/voice')
 const EventEmiter = require('node:events')
 const search = require('./search.js')
-const play = require('play-dl')
+const ytStream = require('yt-stream')
 const getMinute = require('./time')
 
 class QueueBuilder extends EventEmiter {
@@ -67,14 +67,14 @@ class QueueBuilder extends EventEmiter {
                 if(loopMode === 'song') {
                     const latestTrack = this.tracks[0]
                     if(track.source === "YouTube" || track.source === "SoundCloud") {
-                        const stream = await play.stream(latestTrack.url)
+                        const stream = await ytStream.stream(latestTrack.url)
                         audioRes = createAudioResource(stream.stream, {
                             inputType: stream.type,
                             inlineVolume: this.options?.changeableVolume || true
                         })
                     } else {
                         const searchResults = await search.YouTubeSearch(`${latestTrack.name} by ${latestTrack.author.name}`)
-                        const stream = await play.stream(searchResults[0].url)
+                        const stream = await ytStream.stream(searchResults[0].url)
                         audioRes = createAudioResource(stream.stream, {
                             inputType: stream.type,
                             inlineVolume: this.options?.changeableVolume || true
@@ -97,14 +97,14 @@ class QueueBuilder extends EventEmiter {
                 const latestTrack = this.tracks[0]
                 let audioRes
                 if(latestTrack.source === "YouTube" || latestTrack.source === "SoundCloud") {
-                    const stream = await play.stream(latestTrack.url)
+                    const stream = await ytStream.stream(latestTrack.url)
                     audioRes = createAudioResource(stream.stream, {
                         inputType: stream.type,
                         inlineVolume: this.options?.changeableVolume || true
                     })
                 } else {
                     const searchResults = await search.YouTubeSearch(`${latestTrack.name} by ${latestTrack.author.name}`)
-                    const stream = await play.stream(searchResults[0].url)
+                    const stream = await ytStream.stream(searchResults[0].url)
                     audioRes = createAudioResource(stream.stream, {
                         inputType: stream.type,
                         inlineVolume: this.options?.changeableVolume || true
@@ -147,14 +147,14 @@ class QueueBuilder extends EventEmiter {
         const source = newTrack.source
         let audioRes
         if(source === "YouTube" || source === "SoundCloud") {
-            const stream = await play.stream(newTrack.url)
+            const stream = await ytStream.stream(newTrack.url)
             audioRes = createAudioResource(stream.stream, {
                 inputType: stream.type,
                 inlineVolume: this.options?.changeableVolume || true
             })
         } else {
             const searchResults = await search.YouTubeSearch(`${newTrack.name} by ${newTrack.author.name}`)
-            const stream = await play.stream(searchResults[0].url)
+            const stream = await ytStream.stream(searchResults[0].url)
             audioRes = createAudioResource(stream.stream, {
                 inputType: stream.type,
                 inlineVolume: this.options?.changeableVolume || true

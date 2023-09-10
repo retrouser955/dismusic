@@ -1,5 +1,5 @@
 const { joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior, createAudioResource, getVoiceConnection } = require('@discordjs/voice')
-const play = require('play-dl')
+const ytstream = require('yt-stream')
 
 const voiceFunctions = {
     joinTo: async (guild, voice) => {
@@ -12,7 +12,7 @@ const voiceFunctions = {
     },
     playTrack: async (params, extractor, guild) => {
         let stream;
-        typeof extractor == 'function' ? stream = await extractor(params) : stream = await play.stream(params.url)
+        typeof extractor == 'function' ? stream = await extractor(params) : stream = await ytstream.stream(params.url)
         const connection = getVoiceConnection(guild.id) || undefined
         if(!connection) throw new Error('[ Dismusic Error ] Cannot play a resource without having a connection')
         const resource = createAudioResource(typeof extractor == 'function' ? stream : stream.stream, {
